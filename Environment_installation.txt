@@ -1,0 +1,114 @@
+
+References:
+
+https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debians.html
+
+gedit ~/.bashrc
+source /opt/ros/humble/setup.bash
+source ~/.bashrc
+
+https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries/Creating-A-Workspace/Creating-A-Workspace.html#id4
+
+sudo apt update
+sudo apt install python3-colcon-common-extensions
+
+colcon build
+
+https://docs.ros.org/en/humble/Tutorials/Beginner-CLI-Tools/Configuring-ROS2-Environment.html#source-the-setup-files
+
+gedit ~/.bashrc
+export ROS_DOMAIN_ID=22
+export ROS_LOCALHOST_ONLY=1
+source ~/.bashrc
+
+https://github.com/ArduPilot/ardupilot/tree/master/libraries/AP_DDS#installing-build-dependencies
+
+gedit ~/.bashrc
+export PATH=$PATH:~/Micro-XRCE-DDS-Gen/scripts
+source ~/.bashrc
+
+microxrceddsgen -version
+
+https://ardupilot.org/dev/docs/building-the-code.html#setting-up-the-build-environment
+
+sudo apt-get update
+sudo apt-get install git
+sudo apt-get install gitk git-gui
+sudo apt-get install gcc-arm-none-eabi
+
+git clone https://github.com/ArduPilot/ardupilot
+cd ardupilot
+
+git status
+./waf distclean
+./waf distclean
+./waf configure --board MatekF405-Wing
+./waf plane
+
+https://ardupilot.org/dev/docs/ros2.html#ros2
+
+sudo apt update
+sudo apt install python3-vcstool
+'&lt;' represents 'left angle bracket'.
+vcs import --recursive &lt; ros2.repos
+
+https://ardupilot.org/dev/docs/setting-up-sitl-on-linux.html
+
+cd ~/ardupilot
+git pull
+Tools/environment_install/install-prereqs-ubuntu.sh -y
+./waf clean
+./waf configure --board sitl
+./waf copter -v
+
+cd ~/ardupilot/Tools/autotest
+
+sudo pip3 install MAVProxy
+mavproxy.py --version
+
+gedit ~/.bashrc
+export PATH=$PATH:/path/to/mavproxy
+source ~/.bashrc
+
+./sim_vehicle.py -v ArduCopter -w
+
+./sim_vehicle.py -v ArduCopter --console --map
+
+./sim_vehicle.py -v ArduCopter -L KSFO --console --map
+
+https://ardupilot.org/dev/docs/using-sitl-for-ardupilot-testing.html#using-sitl-for-ardupilot-testing
+
+./sim_vehicle.py -v ArduPlane -f quadplane --console --map --osd
+
+./sim_vehicle.py -v ArduCopter -f quadcopter --console --map --osd
+
+https://ardupilot.org/dev/docs/ros2-sitl.html#ros2-sitl
+
+https://gazebosim.org/docs/garden/install_ubuntu
+
+https://ardupilot.org/dev/docs/ros2-gazebo.html
+
+gedit ~/.bashrc
+export GZ_VERSION=garden
+source ~/.bashrc
+
+gedit ~/.bashrc
+source ~/ros2_ws/install/setup.sh
+source ~/.bashrc
+
+ros2 topic list
+ros2 topic echo /imu
+
+https://ardupilot.org/dev/docs/ros2-cartographer-slam.html
+
+
+git clone https://github.com/ArduPilot/ardupilot_ros
+
+mode guided
+arm throttle
+takeoff 2.5
+
+velocity 1 0 0
+velocity 0 -1 0
+velocity 0 -1 0
+velocity 0 1 0

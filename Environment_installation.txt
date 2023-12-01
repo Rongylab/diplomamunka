@@ -36,7 +36,7 @@ sudo apt-get install git
 sudo apt-get install gitk git-gui
 sudo apt-get install gcc-arm-none-eabi
 
-git clone https://github.com/ArduPilot/ardupilot
+git clone --recurse-submodules https://github.com/ArduPilot/ardupilot
 cd ardupilot
 
 git status

@@ -5,3 +5,12 @@ ros2_ws/src/ardupilot
 ros2_ws/src/micro_ros_agent
 ros2_ws/src/ros_tutorials
 ros2_ws/src/ros2.repos
+backup/
+ros2_ws/eeprom.bin
+ros2_ws/mav.parm
+ros2_ws/mav.tlog
+ros2_ws/mav.tlog.raw
+ros2_ws/ros2_gz.repos
+ros2_ws/logs
+ros2_ws/terrain
+ros2_ws/test

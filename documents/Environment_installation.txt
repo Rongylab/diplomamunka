@@ -1,3 +1,4 @@
+https://www.youtube.com/watch?v=2BhyKyzKAbM&t=962s
 
 References:
 
@@ -36,14 +37,21 @@ sudo apt-get install git
 sudo apt-get install gitk git-gui
 sudo apt-get install gcc-arm-none-eabi
 
-git clone --recurse-submodules https://github.com/ArduPilot/ardupilot
+git clone https://github.com/ArduPilot/ardupilot.git --> nem biztos hogy teljesen jó lépés
 cd ardupilot
+git submodule update --init --recursive 
 
-git status
-./waf distclean
+git status 
+./waf distclean   --> csak distclean-el leszedni a szubmodulokat nem működik!!!
 ./waf distclean
 ./waf configure --board MatekF405-Wing
 ./waf plane
+
+Ha nem működik akkor a submodulokat frissíteni kell!
+# this copes with moving origin remote to a new git organisation
+# we run it 3 times due to the poor handling of recursion
+git submodule update --recursive --force --init
+git submodule sync --recursive
 
 https://ardupilot.org/dev/docs/ros2.html#ros2
 
@@ -57,6 +65,18 @@ https://ardupilot.org/dev/docs/setting-up-sitl-on-linux.html
 cd ~/ardupilot
 git pull
 Tools/environment_install/install-prereqs-ubuntu.sh -y
+
+
+/** Lehet hogy kell
+pip install black==21.12b0
+pip install uvloop==0.17.0
+pip install Empty==0.3.3
+./Tools/gittools/submodule-sync.sh
+. ~/.profile
+Log out
+
+**/
+!Itt járok
 ./waf clean
 ./waf configure --board sitl
 ./waf copter -v

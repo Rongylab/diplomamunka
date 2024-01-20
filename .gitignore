@@ -14,3 +14,6 @@ ros2_ws/ros2_gz.repos
 ros2_ws/logs
 ros2_ws/terrain
 ros2_ws/test
+aruco_gridboard
+aruco_gridboard-master
+virtual_machines

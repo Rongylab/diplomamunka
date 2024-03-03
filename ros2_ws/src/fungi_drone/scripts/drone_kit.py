@@ -12,6 +12,9 @@ from guided_set_speed_yaw_modified import goto, condition_yaw
 
 from mavproxy_fakegps import init
 
+import json
+import positions as pos
+
 
 def arm_and_takeoff(aTargetAltitude):
     """
@@ -126,35 +129,69 @@ print("Global Location (relative altitude): %s" % vehicle.location.global_relati
 lat = vehicle.location.global_frame.lat
 lon = vehicle.location.global_frame.lon
 alt = vehicle.location.global_frame.alt
-print("lat %s", lat)
+print("global_frame %s", vehicle.location.global_frame)
 
-print("\n\nMission Start")
-print("Global Location before mission: %s" % vehicle.location.global_frame)
-calc.print_DMS(vehicle)
+# x = {
+#     "pose_ID" : "0",
+#     "lat": lat,
+#     "lon": lon,
+#     "alt": alt
+# }
 
-goto(vehicle, 5, 0)
+# def store_coordinates_dict(pose_ID, lat, lon, alt, orientation = 0):
+#     dict = {
+#     "pose_ID" : pose_ID,
+#     "lat": lat,
+#     "lon": lon,
+#     "alt": alt,
+#     "orientation": orientation
+#     }
+#     return dict
 
-print("Global Location after mission: %s" % vehicle.location.global_frame)
-calc.print_DMS(vehicle)
 
-print("Difference between start and destination points: %.3fm" % calc.diff_in_meter(calc.DD2DMS(lat)[3], calc.DD2DMS(vehicle.location.global_frame.lat)[3], 0))
+# y = []
+# z = store_coordinates_dict(0, lat, lon, alt)
+# y.append(json.dumps(z))
+# y.append(json.dumps(z))
+# y.append(json.dumps(z))
+
+y = pos.Positions()
+
+y.store_coordinates_dict(lat, lon, alt)
+y.store_coordinates_dict(lat, lon, alt)
 
 
-lat = vehicle.location.global_frame.lat
-lon = vehicle.location.global_frame.lon
-alt = vehicle.location.global_frame.alt
-print("lat %s", lat)
 
-print("\n\nMission Start")
-print("Global Location before mission: %s" % vehicle.location.global_frame)
-calc.print_DMS(vehicle)
+print(y.get_positions())
 
-goto(vehicle, -5, 0)
 
-print("Global Location after mission: %s" % vehicle.location.global_frame)
-calc.print_DMS(vehicle)
+# print("\n\nMission Start")
+# print("Global Location before mission: %s" % vehicle.location.global_frame)
+# calc.print_DMS(vehicle)
 
-print("Difference between start and destination points: %.3fm" % calc.diff_in_meter(calc.DD2DMS(lat)[3], calc.DD2DMS(vehicle.location.global_frame.lat)[3], 0))
+# goto(vehicle, 5, 0)
+
+# print("Global Location after mission: %s" % vehicle.location.global_frame)
+# calc.print_DMS(vehicle)
+
+# print("Difference between start and destination points: %.3fm" % calc.diff_in_meter(calc.DD2DMS(lat)[3], calc.DD2DMS(vehicle.location.global_frame.lat)[3], 0))
+
+
+# lat = vehicle.location.global_frame.lat
+# lon = vehicle.location.global_frame.lon
+# alt = vehicle.location.global_frame.alt
+# print("lat %s", lat)
+
+# print("\n\nMission Start")
+# print("Global Location before mission: %s" % vehicle.location.global_frame)
+# calc.print_DMS(vehicle)
+
+# goto(vehicle, -5, 0)
+
+# print("Global Location after mission: %s" % vehicle.location.global_frame)
+# calc.print_DMS(vehicle)
+
+# print("Difference between start and destination points: %.3fm" % calc.diff_in_meter(calc.DD2DMS(lat)[3], calc.DD2DMS(vehicle.location.global_frame.lat)[3], 0))
 
 
 # a_location = LocationGlobal(-34.364114, 149.166022, 30) 

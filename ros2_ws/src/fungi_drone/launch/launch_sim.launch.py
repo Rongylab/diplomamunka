@@ -10,6 +10,7 @@ from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch.actions import DeclareLaunchArgument
 
 from launch_ros.actions import Node
+from launch_ros.substitutions import FindPackageShare
 
 
 
@@ -27,6 +28,28 @@ def generate_launch_description():
     x_pose = '0.0'
     y_pose = '0.0'
     z_pose = '0.0'
+
+    """Generate a launch description for a iris quadcopter."""
+    pkg_project_bringup = get_package_share_directory("ardupilot_gz_bringup")
+    # pkg_project_gazebo = get_package_share_directory("ardupilot_gz_gazebo")
+    pkg_ros_gz_sim = get_package_share_directory("ros_gz_sim")
+
+    # Iris.
+    iris = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            [
+                PathJoinSubstitution(
+                    [
+                        FindPackageShare("ardupilot_gz_bringup"),
+                        "launch",
+                        "robots",
+                        "iris_lidar.launch.py",
+                    ]
+                ),
+            ]
+        )
+    )
+
 
     # rsp = IncludeLaunchDescription(
     #             PythonLaunchDescriptionSource([os.path.join(
@@ -91,6 +114,7 @@ def generate_launch_description():
     return LaunchDescription([
         # rsp,
         gazebo,
+        iris,
         # spawn_entity,
         # bridge,
         # rviz2,

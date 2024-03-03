@@ -33,9 +33,13 @@ endif()
 # ament_python_install_package(${PROJECT_NAME})
 
 # Install Python executables
-# install(PROGRAMS
-#   scripts/py_node.py
-#   DESTINATION lib/${PROJECT_NAME}
-# )
+install(
+  # DIRECTORY config description launch worlds
+  DIRECTORY config description launch models worlds
+  DESTINATION share/${PROJECT_NAME}
+  # PROGRAMS
+  # scripts/py_node.py
+  # DESTINATION lib/${PROJECT_NAME}
+)
 
 ament_package()

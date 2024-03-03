@@ -17,3 +17,10 @@ ros2_ws/test
 aruco_gridboard
 aruco_gridboard-master
 virtual_machines
+ros2_ws/src/fungi_drone/scripts/__pycache__
+ros2_ws/src/fungi_drone/scripts/drone_control.py
+ros2_ws/src/fungi_drone/scripts/guided_set_speed_yaw.py
+ros2_ws/src/fungi_drone/scripts/mavproxy_fakegps.py
+ros2_ws/src/fungi_drone/scripts/mavros_control_square.py
+ros2_ws/src/fungi_drone/scripts/set_origin.py
+

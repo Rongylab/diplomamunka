@@ -187,6 +187,10 @@ def goto_position_target_global_int(vehicle, aLocation):
     See the above link for information on the type_mask (0=enable, 1=ignore). 
     At time of writing, acceleration and yaw bits are ignored.
     """
+
+    currentLocation = vehicle.location.global_relative_frame    
+    targetDistance = get_distance_metres_mod(currentLocation, aLocation)
+
     msg = vehicle.message_factory.set_position_target_global_int_encode(
         0,       # time_boot_ms (not used)
         0, 0,    # target system, target component
@@ -202,6 +206,15 @@ def goto_position_target_global_int(vehicle, aLocation):
         0, 0)    # yaw, yaw_rate (not supported yet, ignored in GCS_Mavlink) 
     # send command to vehicle
     vehicle.send_mavlink(msg)
+
+    while (vehicle.mode.name == "GUIDED"): #Stop action if we are no longer in guided mode.
+        #print "DEBUG: mode: %s" % vehicle.mode.name
+        remainingDistance = get_distance_metres_mod(vehicle.location.global_relative_frame, aLocation)
+        print("Distance to target: ", remainingDistance)
+        if(remainingDistance <= targetDistance*0.10): #Just below target, in case of undershoot.
+            print("Reached target")
+            break
+        time.sleep(1)
 
 
 
@@ -258,7 +271,7 @@ def goto(vehicle, dNorth, dEast):
         #print "DEBUG: mode: %s" % vehicle.mode.name
         remainingDistance = get_distance_metres_mod(vehicle.location.global_relative_frame, targetLocation)
         print("Distance to target: ", remainingDistance)
-        if(remainingDistance <= targetDistance*0.01): #Just below target, in case of undershoot.
+        if(remainingDistance <= targetDistance*0.10): #Just below target, in case of undershoot.
             print("Reached target")
             break
         time.sleep(1)

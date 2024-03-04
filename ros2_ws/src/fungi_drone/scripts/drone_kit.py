@@ -8,7 +8,7 @@ import math
 # Import DroneKit-Python
 from dronekit import connect, VehicleMode, LocationGlobal, LocationGlobalRelative
 import calculations as calc
-from guided_set_speed_yaw_modified import goto, condition_yaw
+from guided_set_speed_yaw_modified import goto, condition_yaw, goto_position_target_global_int
 
 from mavproxy_fakegps import init
 
@@ -97,6 +97,7 @@ print("Global Location (relative altitude): %s" % vehicle.location.global_relati
 
 # Arm the drone and do a takeoff
 # arm_and_takeoff(2)
+# time.sleep(5)
 
 # condition_yaw(vehicle, 270, True)
 # time.sleep(5)
@@ -110,15 +111,36 @@ print("Global Location (relative altitude): %s" % vehicle.location.global_relati
 # print("\n\nMission Start")
 # print("Global Location before mission: %s" % vehicle.location.global_frame)
 # calc.print_DMS(vehicle)
+# goto_position_target_global_int()
+
+y = pos.Positions(init_from_file = True)
+
+for ID in range(y.get_pose_ID()):
+    print(ID)
+    pose = y.get_pose(ID)
+    new_pose = LocationGlobal(pose["lat"], pose["lon"], pose["alt"])
+    # goto_position_target_global_int(vehicle, new_pose)
+    vehicle.simple_goto(new_pose)
+    time.sleep(5)
+
 
 # goto(vehicle, -5, 0)
 # time.sleep(5)
+# y.store_coordinates_dict(vehicle.location.global_frame.lat, vehicle.location.global_frame.lon, vehicle.location.global_frame.alt)
+
 # goto(vehicle, 0, 5)
 # time.sleep(5)
+# y.store_coordinates_dict(vehicle.location.global_frame.lat, vehicle.location.global_frame.lon, vehicle.location.global_frame.alt)
+
 # goto(vehicle, 5, 0)
 # time.sleep(5)
+# y.store_coordinates_dict(vehicle.location.global_frame.lat, vehicle.location.global_frame.lon, vehicle.location.global_frame.alt)
+
 # goto(vehicle, 0, -5)
 # time.sleep(5)
+# y.store_coordinates_dict(vehicle.location.global_frame.lat, vehicle.location.global_frame.lon, vehicle.location.global_frame.alt)
+
+# y.write_poses_to_file()
 
 # print("Global Location after mission: %s" % vehicle.location.global_frame)
 # calc.print_DMS(vehicle)
@@ -126,10 +148,10 @@ print("Global Location (relative altitude): %s" % vehicle.location.global_relati
 # print("Difference between start and destination points: %f" % calc.diff_in_meter(calc.DD2DMS(lat)[3], calc.DD2DMS(vehicle.location.global_frame.lat)[3], 0)) # VALAMI BAJA vana a selectorral!!!
 
 
-lat = vehicle.location.global_frame.lat
-lon = vehicle.location.global_frame.lon
-alt = vehicle.location.global_frame.alt
-print("global_frame %s", vehicle.location.global_frame)
+# lat = vehicle.location.global_frame.lat
+# lon = vehicle.location.global_frame.lon
+# alt = vehicle.location.global_frame.alt
+# print("global_frame %s", vehicle.location.global_frame)
 
 # x = {
 #     "pose_ID" : "0",
@@ -155,14 +177,14 @@ print("global_frame %s", vehicle.location.global_frame)
 # y.append(json.dumps(z))
 # y.append(json.dumps(z))
 
-y = pos.Positions()
+# y = pos.Positions()
 
-y.store_coordinates_dict(lat, lon, alt)
-y.store_coordinates_dict(lat, lon, alt)
+# y.store_coordinates_dict(lat, lon, alt)
+# y.store_coordinates_dict(lat, lon, alt)
 
+# y.write_poses_to_file()
 
-
-print(y.get_positions())
+# print(y.get_positions())
 
 
 # print("\n\nMission Start")

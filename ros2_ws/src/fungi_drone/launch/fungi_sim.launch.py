@@ -46,11 +46,15 @@ from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
 
+
+
 def generate_launch_description():
     """Generate a launch description for a iris quadcopter."""
     pkg_project_bringup = get_package_share_directory("ardupilot_gz_bringup")
     pkg_project_gazebo = get_package_share_directory("fungi_drone")
     pkg_ros_gz_sim = get_package_share_directory("ros_gz_sim")
+
+    package_name="fungi_drone" #<--- CHANGE ME
 
     # Iris.
     iris = IncludeLaunchDescription(
@@ -97,6 +101,12 @@ def generate_launch_description():
         condition=IfCondition(LaunchConfiguration("rviz")),
     )
 
+    joyStick = IncludeLaunchDescription(
+                PythonLaunchDescriptionSource([os.path.join(
+                    get_package_share_directory(package_name),'launch','joystick.launch.py'
+                )]), launch_arguments={'use_sim_time': 'true'}.items()
+    )
+
     return LaunchDescription(
         [
             DeclareLaunchArgument(
@@ -106,5 +116,6 @@ def generate_launch_description():
             gz_sim_gui,
             iris,
             # rviz,
+            joyStick,
         ]
     )

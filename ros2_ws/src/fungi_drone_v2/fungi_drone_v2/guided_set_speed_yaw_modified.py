@@ -379,14 +379,15 @@ def send_global_velocity(vehicle, velocity_x, velocity_y, velocity_z, duration):
 #         modifier
 
 
-def RC_Converter(input_data):
+def RC_Converter(input_data, scaller = 400, invert = 1):
     
+    input_data *= invert
     return_value = 1500
     #[-1.1]
     if(input_data > 0):
-        return_value += input_data * 400
+        return_value += input_data * scaller #400
     elif(input_data < 0):
-        return_value += input_data * 400       
+        return_value += input_data * scaller #400       
 
     return int(return_value)
 
@@ -535,7 +536,6 @@ def change_flight_mode(master, mode = 'STABILIZE'):
 
     return return_value
 
-
 def arm_disarm(vehicle):
     
     if(True == vehicle.armed):
@@ -552,3 +552,28 @@ def arm_disarm(vehicle):
             print(" Waiting for arming...")
             time.sleep(1)
         print("armed!")
+
+""" Upper limit 10  [m/s]
+    Lower limit 0.1 [m/s] """
+def set_vehicle_speed(vehicle, axes_value):
+    if(1 == int(axes_value)):
+        if(vehicle.airspeed < 10):
+            vehicle.airspeed += 0.1         
+
+    elif (-1 == int(axes_value)):
+        if(vehicle.airspeed > 0.1):
+            vehicle.airspeed -= 0.1 
+
+""" Upper limit 400  
+    Lower limit 10  """
+def set_vehicle_speed(axes_value, scaller = 400):
+    if(1 == int(axes_value)):
+        if(scaller < 400):
+            scaller += 10        
+
+    elif (-1 == int(axes_value)):
+        if(scaller > 10):
+            scaller -= 10 
+    
+    return scaller
+    

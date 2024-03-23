@@ -33,7 +33,7 @@ print("Start simulator (SITL)")
 from dronekit import connect, VehicleMode, LocationGlobal, LocationGlobalRelative
 # import calculations as calc
 from guided_set_speed_yaw_modified import goto, condition_yaw, goto_position_target_global_int_mod, send_ned_velocity, set_rc_channel_pwm
-from guided_set_speed_yaw_modified import Arm_copter, change_flight_mode, RC_Converter, send_global_velocity, arm_disarm
+from guided_set_speed_yaw_modified import Arm_copter, change_flight_mode, RC_Converter, send_global_velocity, arm_disarm, set_vehicle_speed
 from drone_kit import arm_and_takeoff
 
 
@@ -74,7 +74,7 @@ class droneControler(Node):
         self.subscription
 
         timer_period = 0.2  # seconds
-        # self.timer = self.create_timer(timer_period, self.timer_callback)
+        self.timer = self.create_timer(timer_period, self.timer_callback)
 
         self.timer_counter = 10
         self.seconds = [0, 0]
@@ -86,6 +86,11 @@ class droneControler(Node):
         self.flight_mode_index = 0
         self.flight_mode_counter  = 1
         self.log_counter = 1
+        
+        self.rc_scaller = 50
+        self.airspeed_counter = 1
+
+        self.save_pose_counter = 1
 
         
 
@@ -102,7 +107,8 @@ class droneControler(Node):
         print("Global Location: %s" % self.vehicle.location.global_frame)
         print("Global Location (relative altitude): %s" % self.vehicle.location.global_relative_frame)
 
-        self.vehicle.mode    = VehicleMode("GUIDED")        
+        self.vehicle.mode    = VehicleMode("GUIDED")
+        self.vehicle.airspeed = 0.5        
         # self.vehicle.armed   = True
 
         # Confirm vehicle armed before attempting to take off
@@ -155,27 +161,32 @@ class droneControler(Node):
 
     def console_log(self, veichle):
         os.system('clear') 
-        print("current flight mode: %s" % self.vehicle.mode.name)
-        print("chosen  flight mode: %s" % self.flight_modes[self.flight_mode_index])
-        print("Veichle armed: %d" % self.vehicle.armed)
+        print(" Current flight mode: %s" % self.vehicle.mode.name)
+        print(" Chosen  flight mode: %s" % self.flight_modes[self.flight_mode_index])
+        print(" Veichle armed: %d" % self.vehicle.armed)
+        print(" Last Heartbeat: %s" % self.vehicle.last_heartbeat)
+        print(" Is Armable?: %s" % self.vehicle.is_armable)
+        print(" System status: %s" % self.vehicle.system_status.state)           
+
+        if("GUIDED" == self.vehicle.mode.name):
+                    print(" Vehicle airspeed: %f" % self.vehicle.airspeed)
+        elif("STABILIZE" == self.vehicle.mode.name):
+                    print(" Vehicle RC_scaller: %d" % self.rc_scaller)
+        
         print("\n\nTime between two cals: %f\n\n" % (self.seconds[1] - self.seconds[0]))
-        print("self.flight_mode_counter: %d" % self.flight_mode_counter)        
-        print("self.flight_mode_counter %d" % self.flight_mode_counter )
+        
     
-    def console_log(self, veichle, msg):
-        os.system('clear') 
-        print("current flight mode: %s" % self.vehicle.mode.name)
-        print("chosen  flight mode: %s" % self.flight_modes[self.flight_mode_index])
-        print("Veichle armed: %d" % self.vehicle.armed)
-        print("\n\nTime between two cals: %f\n\n" % (self.seconds[1] - self.seconds[0]))
-        print("self.flight_mode_counter: %d" % self.flight_mode_counter)        
-        print("self.flight_mode_counter %d" % self.flight_mode_counter)
-
-        print("RC_Converter(msg.axes[3]: Roll    %f" % RC_Converter(msg.axes[3]))
-        print("RC_Converter(msg.axes[1]: Pitch   %f" % RC_Converter(msg.axes[1]))
-        print("RC_Converter(msg.axes[4]: Throtle %f" % RC_Converter(msg.axes[4]))
-        print("RC_Converter(msg.axes[0]: Yaw     %f" % RC_Converter(msg.axes[0]))
-
+    # def console_log(self, veichle, msg):
+    #     os.system('clear') 
+    #     print("current flight mode: %s" % self.vehicle.mode.name)
+    #     print("chosen  flight mode: %s" % self.flight_modes[self.flight_mode_index])
+    #     print("Veichle armed: %d" % self.vehicle.armed)
+    #     print(" Last Heartbeat: %s" % self.vehicle.last_heartbeat)
+    #     print(" Is Armable?: %s" % self.vehicle.is_armable)
+    #     print(" System status: %s" % self.vehicle.system_status.state)
+    #     print(" Mode: %s" % self.vehicle.mode.name )   # settable
+    #     print("\n\nTime between two cals: %f\n\n" % (self.seconds[1] - self.seconds[0]))
+        
         
 
     def listener_callback(self, msg):
@@ -184,11 +195,11 @@ class droneControler(Node):
         if(0 == (self.timer_counter % 10)):
             self.timer_counter = 10
 
-            if(0 == (self.log_counter % 10)):
-                self.log_counter = 1                
-                self.console_log(self.vehicle, msg)
-            else:
-                self.log_counter += 1
+            # if(0 == (self.log_counter % 10)):
+            #     self.log_counter = 1                
+            #     self.console_log(self.vehicle, msg)
+            # else:
+            #     self.log_counter += 1
 
             # self.seconds[0] = self.seconds[1]
             # self.seconds[1] = time.time()
@@ -239,7 +250,25 @@ class droneControler(Node):
             if(1 == msg.buttons[5]):   
                 self.vehicle.mode  = VehicleMode(self.flight_modes[self.flight_mode_index])         
 
-            
+            # Controller Cross up/down => change movement speed
+            if((1 == int(msg.axes[7])) or (-1 == int(msg.axes[7]))):
+                if(0 == (self.airspeed_counter % 5)):
+                    self.airspeed_counter = 1
+
+                    if("GUIDED" == self.vehicle.mode.name): 
+                        set_vehicle_speed(vehicle, msg.axes[7])
+                    elif("STABILIZE" == self.vehicle.mode.name):
+                        self.rc_scaller = set_vehicle_speed(msg.axes[7], self.rc_scaller)
+                else:
+                    self.airspeed_counter += 1
+
+            # Controller RT => Save pose
+            if(-1 == int(msg.axes[5])): 
+                if(0 == (self.save_pose_counter % 10)):
+                    self.save_pose_counter = 1
+                    # TODO call the SAVE function
+                else:
+                    save_pose_counter += 1 
                         
             # Controller LB => Enable button
             if(1 == msg.buttons[4]):
@@ -262,8 +291,8 @@ class droneControler(Node):
                     # # Channel 4: Yaw <-- msg.axes[0]
                     # self.vehicle.channels.overrides['4'] = RC_Converter(msg.axes[0]) # TODO Flight mode select
                     # # {'5':None, '6':None,'3':500}
-                    self.vehicle.channels.overrides = {'1': RC_Converter(msg.axes[3]),         '2': RC_Converter(msg.axes[1]),
-                                                       '3': (RC_Converter(msg.axes[4])), '4': RC_Converter(msg.axes[0])}
+                    self.vehicle.channels.overrides = {'1': RC_Converter(msg.axes[3], self.rc_scaller, -1), '2': RC_Converter(msg.axes[1], self.rc_scaller, -1),
+                                                       '3': RC_Converter(msg.axes[4], self.rc_scaller),     '4': RC_Converter(msg.axes[0], self.rc_scaller, -1)}
 
 
                 # print("msg.axes[3]: %f" % round(msg.axes[3], 6))

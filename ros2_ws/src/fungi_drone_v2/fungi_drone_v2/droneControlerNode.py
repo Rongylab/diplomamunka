@@ -91,7 +91,9 @@ class droneControler(Node):
         self.airspeed_counter = 1
 
         self.save_pose_counter = 1
-
+        self.mission_modes = ["START_MISSION", "START_POSE_COLLECTION", "APPEND_POSE", "RETURN_HOME"]
+        self.mission_mode_index = 1
+        self.mission_mode_counter = 1
         
 
         print("Connecting to vehicle on: %s" % ("127.0.0.1:14550"))
@@ -166,14 +168,16 @@ class droneControler(Node):
         print(" Veichle armed: %d" % self.vehicle.armed)
         print(" Last Heartbeat: %s" % self.vehicle.last_heartbeat)
         print(" Is Armable?: %s" % self.vehicle.is_armable)
-        print(" System status: %s" % self.vehicle.system_status.state)           
+        print(" System status: %s" % self.vehicle.system_status.state)
+        print(" Mission mode: %s" % self.mission_modes[self.mission_mode_index])       
 
         if("GUIDED" == self.vehicle.mode.name):
                     print(" Vehicle airspeed: %f" % self.vehicle.airspeed)
         elif("STABILIZE" == self.vehicle.mode.name):
-                    print(" Vehicle RC_scaller: %d" % self.rc_scaller)
+                    print(" Vehicle RC_scaller: %d" % self.rc_scaller)                    
         
         print("\n\nTime between two cals: %f\n\n" % (self.seconds[1] - self.seconds[0]))
+        
         
     
     # def console_log(self, veichle, msg):
@@ -270,6 +274,19 @@ class droneControler(Node):
                 else:
                     save_pose_counter += 1 
                         
+            # Controller Back/Select => Change mission mode
+            if(1 == int(msg.buttons[6])): 
+                if(0 == (self.mission_mode_counter % 10)):
+                    self.mission_mode_counter = 1
+
+                    if(self.mission_mode_index == (len(self.mission_modes) - 1)):
+                        self.mission_mode_index =  0
+                    else:
+                        self.mission_mode_index += 1                    
+                else:
+                    self.mission_mode_counter += 1
+
+
             # Controller LB => Enable button
             if(1 == msg.buttons[4]):
 

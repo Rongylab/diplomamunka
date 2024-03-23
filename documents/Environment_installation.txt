@@ -132,3 +132,5 @@ velocity 1 0 0
 velocity 0 -1 0
 velocity 0 -1 0
 velocity 0 1 0
+
+pip install pymavlink

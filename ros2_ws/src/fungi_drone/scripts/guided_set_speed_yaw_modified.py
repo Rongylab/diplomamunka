@@ -178,7 +178,7 @@ The methods include:
     This method reports distance to the destination.
 """
 
-def goto_position_target_global_int(vehicle, aLocation):
+def goto_position_target_global_int_mod(vehicle, aLocation):
     """
     Send SET_POSITION_TARGET_GLOBAL_INT command to request the vehicle fly to a specified LocationGlobal.
 
@@ -191,21 +191,23 @@ def goto_position_target_global_int(vehicle, aLocation):
     currentLocation = vehicle.location.global_relative_frame    
     targetDistance = get_distance_metres_mod(currentLocation, aLocation)
 
-    msg = vehicle.message_factory.set_position_target_global_int_encode(
-        0,       # time_boot_ms (not used)
-        0, 0,    # target system, target component
-        mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT_INT, # frame
-        0b0000111111111000, # type_mask (only speeds enabled)
-        aLocation.lat*1e7, # lat_int - X Position in WGS84 frame in 1e7 * meters
-        aLocation.lon*1e7, # lon_int - Y Position in WGS84 frame in 1e7 * meters
-        aLocation.alt, # alt - Altitude in meters in AMSL altitude, not WGS84 if absolute or relative, above terrain if GLOBAL_TERRAIN_ALT_INT
-        0, # X velocity in NED frame in m/s
-        0, # Y velocity in NED frame in m/s
-        0, # Z velocity in NED frame in m/s
-        0, 0, 0, # afx, afy, afz acceleration (not supported yet, ignored in GCS_Mavlink)
-        0, 0)    # yaw, yaw_rate (not supported yet, ignored in GCS_Mavlink) 
-    # send command to vehicle
-    vehicle.send_mavlink(msg)
+    # msg = vehicle.message_factory.set_position_target_global_int_encode(
+    #     0,       # time_boot_ms (not used)
+    #     0, 0,    # target system, target component
+    #     mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT_INT, # frame
+    #     0b0000111111111000, # type_mask (only speeds enabled)
+    #     aLocation.lat*1e7, # lat_int - X Position in WGS84 frame in 1e7 * meters
+    #     aLocation.lon*1e7, # lon_int - Y Position in WGS84 frame in 1e7 * meters
+    #     aLocation.alt, # alt - Altitude in meters in AMSL altitude, not WGS84 if absolute or relative, above terrain if GLOBAL_TERRAIN_ALT_INT
+    #     0, # X velocity in NED frame in m/s
+    #     0, # Y velocity in NED frame in m/s
+    #     0, # Z velocity in NED frame in m/s
+    #     0, 0, 0, # afx, afy, afz acceleration (not supported yet, ignored in GCS_Mavlink)
+    #     0, 0)    # yaw, yaw_rate (not supported yet, ignored in GCS_Mavlink) 
+    # # send command to vehicle
+    # vehicle.send_mavlink(msg)
+
+    vehicle.simple_goto(aLocation)
 
     while (vehicle.mode.name == "GUIDED"): #Stop action if we are no longer in guided mode.
         #print "DEBUG: mode: %s" % vehicle.mode.name

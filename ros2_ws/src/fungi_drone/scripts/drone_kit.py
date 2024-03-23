@@ -8,7 +8,8 @@ import math
 # Import DroneKit-Python
 from dronekit import connect, VehicleMode, LocationGlobal, LocationGlobalRelative
 import calculations as calc
-from guided_set_speed_yaw_modified import goto, condition_yaw, goto_position_target_global_int
+from guided_set_speed_yaw_modified import goto, condition_yaw, goto_position_target_global_int_mod
+# from guided_set_speed_yaw import goto_position_target_global_int
 
 from mavproxy_fakegps import init
 
@@ -96,11 +97,15 @@ print("Global Location (relative altitude): %s" % vehicle.location.global_relati
 
 
 # Arm the drone and do a takeoff
-# arm_and_takeoff(2)
-# time.sleep(5)
+arm_and_takeoff(2)
+time.sleep(5)
+print("Global Location: %s" % vehicle.location.global_frame)
+time.sleep(2)
 
-# condition_yaw(vehicle, 270, True)
-# time.sleep(5)
+# vehicle.airspeed = 0.05 # [m/s]
+
+condition_yaw(vehicle, 270, True)
+time.sleep(5)
 
 
 # lat = vehicle.location.global_frame.lat
@@ -118,9 +123,20 @@ y = pos.Positions(init_from_file = True)
 for ID in range(y.get_pose_ID()):
     print(ID)
     pose = y.get_pose(ID)
-    new_pose = LocationGlobal(pose["lat"], pose["lon"], pose["alt"])
+    new_pose = LocationGlobal(pose["lat"], pose["lon"], pose["alt"])   
+
+    print("Current Pose:")
+    print(vehicle.location.global_frame) 
+    print("New Pose:")
+    print(new_pose)
+    print("") 
+    # vehicle.simple_goto(new_pose) # --> Tökjól működik!!!!!
+    goto_position_target_global_int_mod(vehicle, new_pose)
     # goto_position_target_global_int(vehicle, new_pose)
-    vehicle.simple_goto(new_pose)
+    print("Reached Pose:")
+    print(vehicle.location.global_frame)
+    print("")
+
     time.sleep(5)
 
 

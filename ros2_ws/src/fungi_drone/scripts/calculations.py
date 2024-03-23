@@ -95,3 +95,21 @@ def get_location_metres_mod(original_location, dNorth, dEast):
         
     return targetlocation
 
+
+
+
+# LocationGlobal:lat=-35.3632619,lon=149.1652376,alt=586.02
+# LocationGlobal:lat=-35.3632158,lon=149.1652353,alt=585.97
+
+
+
+#  LocationGlobal:lat=-35.3632162,lon=149.165235,alt=585.96
+#  LocationGlobal:lat=-35.3632158,lon=149.1652353,alt=585.97
+
+# lat=-35.3632159,lon=149.1652354,alt=585.96
+# lat=-35.3632157,lon=149.1652344,alt=585.96
+
+print("diff lat: %f" % diff_in_meter(-35.3632159, -35.3632157))
+print("diff lon: %f" % diff_in_meter(149.1652354, 149.1652344, 1))
+# print("diff alt: %f" % diff_in_meter(586.02, 585.97))
+

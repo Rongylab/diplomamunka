@@ -36,10 +36,17 @@ endif()
 install(
   # DIRECTORY config description launch worlds
   DIRECTORY config description launch models worlds
+  # PROGRAMS scripts/drone_control.py
   DESTINATION share/${PROJECT_NAME}
   # PROGRAMS
   # scripts/py_node.py
   # DESTINATION lib/${PROJECT_NAME}
+)
+
+ament_python_install_package(${PROJECT_NAME})
+install(PROGRAMS
+scripts/droneControlerNode.py
+DESTINATION lib/${PROJECT_NAME}
 )
 
 ament_package()

@@ -64,7 +64,7 @@ class Positions:
             for json_object in json_objects:
                 # Load the JSON object
                 obj = json.loads(json_object)                
-                self.positions.append(obj)
+                self.positions.append(json.dumps(obj))
                 pose_ID_local += 1
 
             self.pose_ID = pose_ID_local                   
@@ -84,16 +84,21 @@ class Positions:
 #     }
 #     return dict            
 
-# y = Positions(True)
-# print(y.get_pose_ID())
+# y = Positions(False)
+# # print(y.get_pose_ID())
 
 # y.store_coordinates_dict(1, 2, 3)
 # y.store_coordinates_dict(4, 5, 6)
 # y.write_poses_to_file()
 
-# y.read_poses_from_file()
+# y = Positions(True)
+# # y.read_poses_from_file()
 # print(y.get_pose(0))
 # print(y.get_pose(1))
+
+# y.store_coordinates_dict(7, 8, 9)
+# y.store_coordinates_dict(10, 11, 12)
+# y.write_poses_to_file()
 
 # pose = y.get_pose(1)
 # print("lat: %f" %pose["lat"])

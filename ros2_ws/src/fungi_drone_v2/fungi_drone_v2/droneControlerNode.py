@@ -32,8 +32,8 @@ print("Start simulator (SITL)")
 # Import DroneKit-Python
 from dronekit import connect, VehicleMode, LocationGlobal, LocationGlobalRelative
 # import calculations as calc
-from guided_set_speed_yaw_modified import goto, condition_yaw, goto_position_target_global_int_mod, send_ned_velocity, set_rc_channel_pwm
-from guided_set_speed_yaw_modified import Arm_copter, change_flight_mode, RC_Converter, send_global_velocity, arm_disarm, set_vehicle_speed
+from guided_set_speed_yaw_modified import goto, condition_yaw, goto_position_target_global_int_mod, send_ned_velocity
+from guided_set_speed_yaw_modified import RC_Converter, send_global_velocity, arm_disarm, set_vehicle_speed
 from drone_kit import arm_and_takeoff
 
 
@@ -111,25 +111,7 @@ class droneControler(Node):
 
         self.vehicle.mode    = VehicleMode("GUIDED")
         self.vehicle.airspeed = 0.5        
-        # self.vehicle.armed   = True
-
-        # Confirm vehicle armed before attempting to take off
-        # while not self.vehicle.armed:
-        #     print(" Waiting for arming...")
-        #     time.sleep(1)
-        # print("armed!")
-
-
-        # Create the connection
-        # SITL connected to the vehicle via UDP
-        # self.master = mavutil.mavlink_connection('udpin:127.0.0.1:14550')                        #('udpin:0.0.0.0:14550')
-        # # Wait a heartbeat before sending commands
-        # self.master.wait_heartbeat()
-        # print("Connected")
-
-        # self.returm_value = change_flight_mode(self.master)
-        # print("flight mode change response: %d" % self.returm_value)
-
+        
         # self.y = pos.Positions(init_from_file = True)
        
         # arm_and_takeoff(self.vehicle, 2)
@@ -163,6 +145,7 @@ class droneControler(Node):
 
     def console_log(self, veichle):
         os.system('clear') 
+        print("Drone ID: %s" % "N.A.")
         print(" Current flight mode: %s" % self.vehicle.mode.name)
         print(" Chosen  flight mode: %s" % self.flight_modes[self.flight_mode_index])
         print(" Veichle armed: %d" % self.vehicle.armed)
@@ -204,20 +187,7 @@ class droneControler(Node):
             #     self.console_log(self.vehicle, msg)
             # else:
             #     self.log_counter += 1
-
-            # self.seconds[0] = self.seconds[1]
-            # self.seconds[1] = time.time()
-
-            # print("current flight mode: %s" % self.vehicle.mode.name)
-            # print("chosen flight mode: %s" % self.flight_modes[self.flight_mode_index])
-
-            # print("\nListener callback")
-            # print("\n\nTime between two cals: %f\n\n" % (self.seconds[1] - self.seconds[0]))
-            # print("vehicle.yaw: %f" % math.degrees(self.vehicle.attitude.yaw))
-
-            # self.get_logger().info('I heard: "%f"' % msg.axes)
-            # print("button 3: %d" % msg.buttons[3])
-            # print("button 4: %d" % msg.buttons[4])
+          
 
             # Controller Y => armed/disarmed
             if(1 == msg.buttons[3]):
@@ -260,7 +230,7 @@ class droneControler(Node):
                     self.airspeed_counter = 1
 
                     if("GUIDED" == self.vehicle.mode.name): 
-                        set_vehicle_speed(vehicle, msg.axes[7])
+                        set_vehicle_speed(self.vehicle, msg.axes[7])
                     elif("STABILIZE" == self.vehicle.mode.name):
                         self.rc_scaller = set_vehicle_speed(msg.axes[7], self.rc_scaller)
                 else:
@@ -299,51 +269,15 @@ class droneControler(Node):
                         # send_ned_velocity(self.vehicle, msg.axes[0], msg.axes[1], (-1 * msg.axes[4]), 1) 
                         send_global_velocity(self.vehicle, msg.axes[0], msg.axes[1], (-1 * msg.axes[4]), 1)     
                 else:
-                    # # Channel 1: Roll <-- msg.axes[3]
-                    # self.vehicle.channels.overrides['1'] = RC_Converter(msg.axes[3])
-                    # # Channel 2: Pitch <-- msg.axes[1]
-                    # self.vehicle.channels.overrides['2'] = RC_Converter(msg.axes[1])
-                    # # Channel 3: Throttle <-- msg.axes[4]
-                    # self.vehicle.channels.overrides['3'] = (RC_Converter(msg.axes[4]) - 400)
+                    # # Channel 1: Roll <-- msg.axes[3]                    
+                    # # Channel 2: Pitch <-- msg.axes[1]                    
+                    # # Channel 3: Throttle <-- msg.axes[4]                   
                     # # Channel 4: Yaw <-- msg.axes[0]
-                    # self.vehicle.channels.overrides['4'] = RC_Converter(msg.axes[0]) # TODO Flight mode select
-                    # # {'5':None, '6':None,'3':500}
                     self.vehicle.channels.overrides = {'1': RC_Converter(msg.axes[3], self.rc_scaller, -1), '2': RC_Converter(msg.axes[1], self.rc_scaller, -1),
                                                        '3': RC_Converter(msg.axes[4], self.rc_scaller),     '4': RC_Converter(msg.axes[0], self.rc_scaller, -1)}
-
-
-                # print("msg.axes[3]: %f" % round(msg.axes[3], 6))
-                # print("Both: %f" % (math.degrees(self.vehicle.attitude.yaw) + round(msg.axes[3], 6)))
-
-                # Set some roll
-                # set_rc_channel_pwm(self.vehicle, 2, 1600)
-
-                # Set some throttle
-                #print("Set throttle")
-
-                
-
-                # set_rc_channel_pwm(self.master, 3, 1600)
-            # else:
-            #     self.vehicle.channels.overrides['1'] = 1100
-            #     # Channel 2: Pitch
-            #     self.vehicle.channels.overrides['2'] = 1100
-            #     # Channel 3: Throttle
-            #     self.vehicle.channels.overrides['3'] = 1100
-            #     # Channel 4: Yaw
-            #     self.vehicle.channels.overrides['4'] = 1100
-
-
-
         else:
             self.timer_counter += 1
 
-
-
-
-
-
-        
 
 
 def main(args=None):
@@ -362,20 +296,3 @@ def main(args=None):
 
 if __name__ == '__main__':
     main()
-
-
-
-
-
-
-
-
-
-# def demo_fly():
-#     print("kuki")
-
-
-
-
-# if __name__=="__main__":
-#     demo_fly()

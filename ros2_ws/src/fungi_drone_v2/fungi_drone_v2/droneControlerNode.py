@@ -89,11 +89,23 @@ class droneControler(Node):
         
         self.rc_scaller = 50
         self.airspeed_counter = 1
+        # [0.1; 1] m/s
+        self.guided_airspeed_scaller = 0.5
 
         self.save_pose_counter = 1
-        self.mission_modes = ["START_MISSION", "START_POSE_COLLECTION", "APPEND_POSE", "RETURN_HOME"]
+        self.save_pose_displayed_counter = 1
+        self.saved_pose_indicator = 0
+        self.file_writing_indicator = 0
+
+        self.mission_modes = ["START_MISSION", "START_POSE_COLLECTION", "APPEND_POSE", "RETURN_HOME", "STOP_MISSION"]
         self.mission_mode_index = 1
         self.mission_mode_counter = 1
+        self.start_mission_counter = 1
+        self.start_mission_status = ["Idle", "Ongoing"]
+        self.start_mission_index = 0
+
+        self.positions = None #pos.Positions(init_from_file = False)
+
         
 
         print("Connecting to vehicle on: %s" % ("127.0.0.1:14550"))
@@ -145,21 +157,35 @@ class droneControler(Node):
 
     def console_log(self, veichle):
         os.system('clear') 
-        print("Drone ID: %s" % "N.A.")
+        print("\n\nTime between two cals: %f\n\n" % (self.seconds[1] - self.seconds[0]))
+        print(" Drone ID: %s" % "N.A.")
         print(" Current flight mode: %s" % self.vehicle.mode.name)
         print(" Chosen  flight mode: %s" % self.flight_modes[self.flight_mode_index])
         print(" Veichle armed: %d" % self.vehicle.armed)
         print(" Last Heartbeat: %s" % self.vehicle.last_heartbeat)
         print(" Is Armable?: %s" % self.vehicle.is_armable)
         print(" System status: %s" % self.vehicle.system_status.state)
-        print(" Mission mode: %s" % self.mission_modes[self.mission_mode_index])       
+        print(" Mission mode: %s" % self.mission_modes[self.mission_mode_index])   
+        print(" Mission status: %s" % self.start_mission_status[self.start_mission_index])                
 
         if("GUIDED" == self.vehicle.mode.name):
                     print(" Vehicle airspeed: %f" % self.vehicle.airspeed)
         elif("STABILIZE" == self.vehicle.mode.name):
-                    print(" Vehicle RC_scaller: %d" % self.rc_scaller)                    
-        
-        print("\n\nTime between two cals: %f\n\n" % (self.seconds[1] - self.seconds[0]))
+                    print(" Vehicle RC_scaller: %d" % self.rc_scaller)   
+
+        # After a pose saving the indicator displays until 5 sec
+        if(1 == self.saved_pose_indicator):
+            if(1 == self.file_writing_indicator):
+                print(" Pose list was WRITEN into a file")  
+            else:     
+                print(" Pose SAVED to the list")  
+            if(0 != (self.save_pose_displayed_counter % 26)):
+                self.save_pose_displayed_counter += 1
+            else:
+                self.save_pose_displayed_counter = 1
+                self.saved_pose_indicator = 0
+                self.file_writing_indicator = 0                   
+              
         
         
     
@@ -241,8 +267,12 @@ class droneControler(Node):
                 if(0 == (self.save_pose_counter % 10)):
                     self.save_pose_counter = 1
                     # TODO call the SAVE function
+                    self.saved_pose_indicator = 1
+                    self.positions.store_coordinates_dict(self.vehicle.location.global_frame.lat,
+                                                          self.vehicle.location.global_frame.lon,
+                                                          self.vehicle.location.global_frame.alt)
                 else:
-                    save_pose_counter += 1 
+                    self.save_pose_counter += 1 
                         
             # Controller Back/Select => Change mission mode
             if(1 == int(msg.buttons[6])): 
@@ -255,6 +285,37 @@ class droneControler(Node):
                         self.mission_mode_index += 1                    
                 else:
                     self.mission_mode_counter += 1
+
+                # self.start_mission_counter 
+            
+            # Controller Start/Play => Start mission
+            if(1 == int(msg.buttons[7])): 
+                if(0 == (self.start_mission_counter % 10)):
+                    self.start_mission_counter = 1
+                    
+                    #Checks is there any ongoing mission or not
+                    if(0 == self.start_mission_index):
+                        self.start_mission_index = 1
+                        if("START_POSE_COLLECTION" == self.mission_modes[self.mission_mode_index]):                            
+                            # Create an empty position store object
+                            self.positions = pos.Positions(init_from_file = False)                                             
+                        # else:
+                        #     self.start_mission_index = 0
+                    else:
+                        if("START_POSE_COLLECTION" == self.mission_modes[self.mission_mode_index]):
+                            self.positions.write_poses_to_file()
+                            self.file_writing_indicator = 1  
+                            self.saved_pose_indicator = 1 
+                        if("STOP_MISSION" == self.mission_modes[self.mission_mode_index]):
+                            self.start_mission_index = 0
+
+
+
+                                   
+                else:
+                    self.start_mission_counter += 1
+
+            
 
 
             # Controller LB => Enable button

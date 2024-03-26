@@ -90,6 +90,7 @@ class droneControler(Node):
         self.rc_scaller = 50
         self.airspeed_counter = 1
         # [0.1; 1] m/s
+        # TODO create a function which set this value
         self.guided_airspeed_scaller = 0.5
 
         self.save_pose_counter = 1
@@ -105,6 +106,9 @@ class droneControler(Node):
         self.start_mission_index = 0
 
         self.positions = None #pos.Positions(init_from_file = False)
+
+        # TODO add ERROR displays
+        self.ERROR_message = None
 
         
 
@@ -263,16 +267,18 @@ class droneControler(Node):
                     self.airspeed_counter += 1
 
             # Controller RT => Save pose
-            if(-1 == int(msg.axes[5])): 
-                if(0 == (self.save_pose_counter % 10)):
-                    self.save_pose_counter = 1
-                    # TODO call the SAVE function
-                    self.saved_pose_indicator = 1
-                    self.positions.store_coordinates_dict(self.vehicle.location.global_frame.lat,
-                                                          self.vehicle.location.global_frame.lon,
-                                                          self.vehicle.location.global_frame.alt)
-                else:
-                    self.save_pose_counter += 1 
+            if(("START_POSE_COLLECTION" == self.mission_modes[self.mission_mode_index]) or
+               ("APPEND_POSE" == self.mission_modes[self.mission_mode_index])):      
+                if(-1 == int(msg.axes[5])): 
+                    if(0 == (self.save_pose_counter % 10)):
+                        self.save_pose_counter = 1
+                        # TODO call the SAVE function
+                        self.saved_pose_indicator = 1
+                        self.positions.store_coordinates_dict(self.vehicle.location.global_frame.lat,
+                                                            self.vehicle.location.global_frame.lon,
+                                                            self.vehicle.location.global_frame.alt)
+                    else:
+                        self.save_pose_counter += 1 
                         
             # Controller Back/Select => Change mission mode
             if(1 == int(msg.buttons[6])): 
@@ -298,19 +304,20 @@ class droneControler(Node):
                         self.start_mission_index = 1
                         if("START_POSE_COLLECTION" == self.mission_modes[self.mission_mode_index]):                            
                             # Create an empty position store object
-                            self.positions = pos.Positions(init_from_file = False)                                             
+                            self.positions = pos.Positions(init_from_file = False)   
+                        elif("APPEND_POSE" == self.mission_modes[self.mission_mode_index]): 
+                            if(None == self.positions):
+                                self.positions = pos.Positions(init_from_file = True)                            
                         # else:
                         #     self.start_mission_index = 0
                     else:
-                        if("START_POSE_COLLECTION" == self.mission_modes[self.mission_mode_index]):
+                        if(("START_POSE_COLLECTION" == self.mission_modes[self.mission_mode_index]) or 
+                           ("APPEND_POSE" == self.mission_modes[self.mission_mode_index])):                            
                             self.positions.write_poses_to_file()
                             self.file_writing_indicator = 1  
                             self.saved_pose_indicator = 1 
                         if("STOP_MISSION" == self.mission_modes[self.mission_mode_index]):
                             self.start_mission_index = 0
-
-
-
                                    
                 else:
                     self.start_mission_counter += 1
@@ -325,7 +332,7 @@ class droneControler(Node):
                     if(0 == (msg.axes[0])) and (0 == (msg.axes[1])) and (0 == (msg.axes[4])):   
                         # send yaw intruction from the controller
                         condition_yaw(self.vehicle, (round(msg.axes[3] * self.scaller , 6)), True) # math.degrees(self.vehicle.attitude.yaw) +     
-                    else:
+                    elif("STABILIZE" == self.vehicle.mode.name):
                         # Send velocity from the controller              
                         # send_ned_velocity(self.vehicle, msg.axes[0], msg.axes[1], (-1 * msg.axes[4]), 1) 
                         send_global_velocity(self.vehicle, msg.axes[0], msg.axes[1], (-1 * msg.axes[4]), 1)     

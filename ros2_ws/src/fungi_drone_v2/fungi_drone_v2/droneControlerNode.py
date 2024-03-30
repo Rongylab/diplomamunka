@@ -43,6 +43,7 @@ from drone_kit import arm_and_takeoff
 
 # import json
 import positions as pos
+from fungi_msgs.msg import JoyID
 
 
 
@@ -67,8 +68,8 @@ class droneControler(Node):
     def __init__(self):
         super().__init__("droneControler")
         self.subscription = self.create_subscription(
-            Joy,
-            'joy',
+            JoyID,
+            'joyid',
             self.listener_callback,
             10)
         self.subscription
@@ -110,8 +111,10 @@ class droneControler(Node):
         # TODO add ERROR displays
         self.ERROR_message = None
 
+        #TODO add ID from parameter
+        self.ID = 0
         
-
+        #TODO IP address change according to the input parameters
         print("Connecting to vehicle on: %s" % ("127.0.0.1:14550"))
         self.vehicle = connect('127.0.0.1:14550', wait_ready=True)
         # # Get some vehicle attributes (state)
@@ -162,7 +165,7 @@ class droneControler(Node):
     def console_log(self, veichle):
         os.system('clear') 
         print("\n\nTime between two cals: %f\n\n" % (self.seconds[1] - self.seconds[0]))
-        print(" Drone ID: %s" % "N.A.")
+        print(" Drone ID: %d" % self.ID)
         print(" Current flight mode: %s" % self.vehicle.mode.name)
         print(" Chosen  flight mode: %s" % self.flight_modes[self.flight_mode_index])
         print(" Veichle armed: %d" % self.vehicle.armed)
@@ -212,112 +215,113 @@ class droneControler(Node):
         if(0 == (self.timer_counter % 10)):
             self.timer_counter = 10
 
-            # if(0 == (self.log_counter % 10)):
-            #     self.log_counter = 1                
-            #     self.console_log(self.vehicle, msg)
-            # else:
-            #     self.log_counter += 1
-          
-
-            # Controller Y => armed/disarmed
-            if(1 == msg.buttons[3]):
-                if("GUIDED" == self.vehicle.mode.name):
-                    arm_and_takeoff(self.vehicle, 2, "GUIDED")    
-                if("STABILIZE" == self.vehicle.mode.name):
-                    arm_and_takeoff(self.vehicle, 0, "STABILIZE")
-                # arm_disarm(self.vehicle)
-                
-            # Controller Cross Lef/Right => change mode
-            if((1 == int(msg.axes[6])) or (-1 == int(msg.axes[6]))):
-
-                if(0 == (self.flight_mode_counter % 5)):
-                    self.flight_mode_counter = 1
-                    self.seconds[0] = self.seconds[1]
-                    self.seconds[1] = time.time()
-                    # print("\n\nTime between two cals: %f\n\n" % (self.seconds[1] - self.seconds[0]))
-
-                    if(1 == int(msg.axes[6])):
-                        if(self.flight_mode_index == 0):
-                            self.flight_mode_index =  len(self.flight_modes) - 1
-                        else:
-                            self.flight_mode_index -= 1
-
-                    if(-1 == int(msg.axes[6])):
-                        if(self.flight_mode_index == (len(self.flight_modes) - 1)):
-                            self.flight_mode_index =  0
-                        else:
-                            self.flight_mode_index += 1
-                else:
-                    self.flight_mode_counter += 1
-                
-            # Controller RB accept the new flight mode
-            if(1 == msg.buttons[5]):   
-                self.vehicle.mode  = VehicleMode(self.flight_modes[self.flight_mode_index])         
-
-            # Controller Cross up/down => change movement speed
-            if((1 == int(msg.axes[7])) or (-1 == int(msg.axes[7]))):
-                if(0 == (self.airspeed_counter % 5)):
-                    self.airspeed_counter = 1
-
-                    if("GUIDED" == self.vehicle.mode.name): 
-                        set_vehicle_speed(self.vehicle, msg.axes[7])
-                    elif("STABILIZE" == self.vehicle.mode.name):
-                        self.rc_scaller = set_vehicle_speed(msg.axes[7], self.rc_scaller)
-                else:
-                    self.airspeed_counter += 1
-
-            # Controller RT => Save pose
-            if(("START_POSE_COLLECTION" == self.mission_modes[self.mission_mode_index]) or
-               ("APPEND_POSE" == self.mission_modes[self.mission_mode_index])):      
-                if(-1 == int(msg.axes[5])): 
-                    if(0 == (self.save_pose_counter % 10)):
-                        self.save_pose_counter = 1
-                        # TODO call the SAVE function
-                        self.saved_pose_indicator = 1
-                        self.positions.store_coordinates_dict(self.vehicle.location.global_frame.lat,
-                                                            self.vehicle.location.global_frame.lon,
-                                                            self.vehicle.location.global_frame.alt)
-                    else:
-                        self.save_pose_counter += 1 
-                        
-            # Controller Back/Select => Change mission mode
-            if(1 == int(msg.buttons[6])): 
-                if(0 == (self.mission_mode_counter % 10)):
-                    self.mission_mode_counter = 1
-
-                    if(self.mission_mode_index == (len(self.mission_modes) - 1)):
-                        self.mission_mode_index =  0
-                    else:
-                        self.mission_mode_index += 1                    
-                else:
-                    self.mission_mode_counter += 1
-
-                # self.start_mission_counter 
+            if(self.ID == msg.id):
+                # if(0 == (self.log_counter % 10)):
+                #     self.log_counter = 1                
+                #     self.console_log(self.vehicle, msg)
+                # else:
+                #     self.log_counter += 1
             
-            # Controller Start/Play => Start mission
-            if(1 == int(msg.buttons[7])): 
-                if(0 == (self.start_mission_counter % 10)):
-                    self.start_mission_counter = 1
+
+                # Controller Y => armed/disarmed
+                if(1 == msg.buttons[3]):
+                    if("GUIDED" == self.vehicle.mode.name):
+                        arm_and_takeoff(self.vehicle, 2, "GUIDED")    
+                    if("STABILIZE" == self.vehicle.mode.name):
+                        arm_and_takeoff(self.vehicle, 0, "STABILIZE")
+                    # arm_disarm(self.vehicle)
                     
-                    #Checks is there any ongoing mission or not
-                    if(0 == self.start_mission_index):
-                        self.start_mission_index = 1
-                        if("START_POSE_COLLECTION" == self.mission_modes[self.mission_mode_index]):                            
-                            # Create an empty position store object
-                            self.positions = pos.Positions(init_from_file = False)   
-                        elif("APPEND_POSE" == self.mission_modes[self.mission_mode_index]): 
-                            if(None == self.positions):
-                                self.positions = pos.Positions(init_from_file = True)                            
-                        # else:
-                        #     self.start_mission_index = 0
+                # Controller Cross Lef/Right => change mode
+                if((1 == int(msg.axes[6])) or (-1 == int(msg.axes[6]))):
+
+                    if(0 == (self.flight_mode_counter % 5)):
+                        self.flight_mode_counter = 1
+                        self.seconds[0] = self.seconds[1]
+                        self.seconds[1] = time.time()
+                        # print("\n\nTime between two cals: %f\n\n" % (self.seconds[1] - self.seconds[0]))
+
+                        if(1 == int(msg.axes[6])):
+                            if(self.flight_mode_index == 0):
+                                self.flight_mode_index =  len(self.flight_modes) - 1
+                            else:
+                                self.flight_mode_index -= 1
+
+                        if(-1 == int(msg.axes[6])):
+                            if(self.flight_mode_index == (len(self.flight_modes) - 1)):
+                                self.flight_mode_index =  0
+                            else:
+                                self.flight_mode_index += 1
                     else:
-                        if(("START_POSE_COLLECTION" == self.mission_modes[self.mission_mode_index]) or 
-                           ("APPEND_POSE" == self.mission_modes[self.mission_mode_index])):                            
-                            self.positions.write_poses_to_file()
-                            self.file_writing_indicator = 1  
-                            self.saved_pose_indicator = 1 
-                        if("STOP_MISSION" == self.mission_modes[self.mission_mode_index]):
-                            self.start_mission_index = 0
+                        self.flight_mode_counter += 1
+                    
+                # Controller RB accept the new flight mode
+                if(1 == msg.buttons[5]):   
+                    self.vehicle.mode  = VehicleMode(self.flight_modes[self.flight_mode_index])         
+
+                # Controller Cross up/down => change movement speed
+                if((1 == int(msg.axes[7])) or (-1 == int(msg.axes[7]))):
+                    if(0 == (self.airspeed_counter % 5)):
+                        self.airspeed_counter = 1
+
+                        if("GUIDED" == self.vehicle.mode.name): 
+                            set_vehicle_speed(self.vehicle, msg.axes[7])
+                        elif("STABILIZE" == self.vehicle.mode.name):
+                            self.rc_scaller = set_vehicle_speed(msg.axes[7], self.rc_scaller)
+                    else:
+                        self.airspeed_counter += 1
+
+                # Controller RT => Save pose
+                if(("START_POSE_COLLECTION" == self.mission_modes[self.mission_mode_index]) or
+                ("APPEND_POSE" == self.mission_modes[self.mission_mode_index])):      
+                    if(-1 == int(msg.axes[5])): 
+                        if(0 == (self.save_pose_counter % 10)):
+                            self.save_pose_counter = 1
+                            # TODO call the SAVE function
+                            self.saved_pose_indicator = 1
+                            self.positions.store_coordinates_dict(self.vehicle.location.global_frame.lat,
+                                                                self.vehicle.location.global_frame.lon,
+                                                                self.vehicle.location.global_frame.alt)
+                        else:
+                            self.save_pose_counter += 1 
+                            
+                # Controller Back/Select => Change mission mode
+                if(1 == int(msg.buttons[6])): 
+                    if(0 == (self.mission_mode_counter % 10)):
+                        self.mission_mode_counter = 1
+
+                        if(self.mission_mode_index == (len(self.mission_modes) - 1)):
+                            self.mission_mode_index =  0
+                        else:
+                            self.mission_mode_index += 1                    
+                    else:
+                        self.mission_mode_counter += 1
+
+                    # self.start_mission_counter 
+                
+                # Controller Start/Play => Start mission
+                if(1 == int(msg.buttons[7])): 
+                    if(0 == (self.start_mission_counter % 10)):
+                        self.start_mission_counter = 1
+                        
+                        #Checks is there any ongoing mission or not
+                        if(0 == self.start_mission_index):
+                            self.start_mission_index = 1
+                            if("START_POSE_COLLECTION" == self.mission_modes[self.mission_mode_index]):                            
+                                # Create an empty position store object
+                                self.positions = pos.Positions(init_from_file = False)   
+                            elif("APPEND_POSE" == self.mission_modes[self.mission_mode_index]): 
+                                if(None == self.positions):
+                                    self.positions = pos.Positions(init_from_file = True)                            
+                            # else:
+                            #     self.start_mission_index = 0
+                        else:
+                            if(("START_POSE_COLLECTION" == self.mission_modes[self.mission_mode_index]) or 
+                            ("APPEND_POSE" == self.mission_modes[self.mission_mode_index])):                            
+                                self.positions.write_poses_to_file()
+                                self.file_writing_indicator = 1  
+                                self.saved_pose_indicator = 1 
+                            if("STOP_MISSION" == self.mission_modes[self.mission_mode_index]):
+                                self.start_mission_index = 0
                                    
                 else:
                     self.start_mission_counter += 1

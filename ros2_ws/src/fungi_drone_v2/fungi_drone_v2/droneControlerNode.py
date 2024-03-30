@@ -113,7 +113,7 @@ class droneControler(Node):
 
         #TODO add ID from parameter
         self.ID = 0
-        
+                
         #TODO IP address change according to the input parameters
         print("Connecting to vehicle on: %s" % ("127.0.0.1:14550"))
         self.vehicle = connect('127.0.0.1:14550', wait_ready=True)
@@ -129,8 +129,10 @@ class droneControler(Node):
         print("Global Location (relative altitude): %s" % self.vehicle.location.global_relative_frame)
 
         self.vehicle.mode    = VehicleMode("GUIDED")
-        self.vehicle.airspeed = 0.5        
-        
+        self.vehicle.airspeed = 0.5     
+
+
+                
         # self.y = pos.Positions(init_from_file = True)
        
         # arm_and_takeoff(self.vehicle, 2)
@@ -173,13 +175,13 @@ class droneControler(Node):
         print(" Is Armable?: %s" % self.vehicle.is_armable)
         print(" System status: %s" % self.vehicle.system_status.state)
         print(" Mission mode: %s" % self.mission_modes[self.mission_mode_index])   
-        print(" Mission status: %s" % self.start_mission_status[self.start_mission_index])                
-
+        print(" Mission status: %s" % self.start_mission_status[self.start_mission_index])  
+        
         if("GUIDED" == self.vehicle.mode.name):
                     print(" Vehicle airspeed: %f" % self.vehicle.airspeed)
         elif("STABILIZE" == self.vehicle.mode.name):
                     print(" Vehicle RC_scaller: %d" % self.rc_scaller)   
-
+        
         # After a pose saving the indicator displays until 5 sec
         if(1 == self.saved_pose_indicator):
             if(1 == self.file_writing_indicator):
@@ -191,7 +193,9 @@ class droneControler(Node):
             else:
                 self.save_pose_displayed_counter = 1
                 self.saved_pose_indicator = 0
-                self.file_writing_indicator = 0                   
+                self.file_writing_indicator = 0      
+
+        
               
         
         
@@ -212,10 +216,11 @@ class droneControler(Node):
     def listener_callback(self, msg):
         # self.console_log(self.vehicle, msg)
 
+        
         if(0 == (self.timer_counter % 10)):
             self.timer_counter = 10
 
-            if(self.ID == msg.id):
+            if(self.ID == msg.id): # msg.id self.ID == 0
                 # if(0 == (self.log_counter % 10)):
                 #     self.log_counter = 1                
                 #     self.console_log(self.vehicle, msg)
@@ -223,7 +228,7 @@ class droneControler(Node):
                 #     self.log_counter += 1
             
 
-                # Controller Y => armed/disarmed
+                # Controller Y => armed/disarmed  #PIPA
                 if(1 == msg.buttons[3]):
                     if("GUIDED" == self.vehicle.mode.name):
                         arm_and_takeoff(self.vehicle, 2, "GUIDED")    
@@ -231,7 +236,7 @@ class droneControler(Node):
                         arm_and_takeoff(self.vehicle, 0, "STABILIZE")
                     # arm_disarm(self.vehicle)
                     
-                # Controller Cross Lef/Right => change mode
+                # Controller Cross Lef/Right => change mode #PIPA
                 if((1 == int(msg.axes[6])) or (-1 == int(msg.axes[6]))):
 
                     if(0 == (self.flight_mode_counter % 5)):
@@ -254,11 +259,11 @@ class droneControler(Node):
                     else:
                         self.flight_mode_counter += 1
                     
-                # Controller RB accept the new flight mode
+                # Controller RB accept the new flight mode #PIPA
                 if(1 == msg.buttons[5]):   
                     self.vehicle.mode  = VehicleMode(self.flight_modes[self.flight_mode_index])         
 
-                # Controller Cross up/down => change movement speed
+                # Controller Cross up/down => change movement speed #PIPA
                 if((1 == int(msg.axes[7])) or (-1 == int(msg.axes[7]))):
                     if(0 == (self.airspeed_counter % 5)):
                         self.airspeed_counter = 1
@@ -270,7 +275,7 @@ class droneControler(Node):
                     else:
                         self.airspeed_counter += 1
 
-                # Controller RT => Save pose
+                # Controller RT => Save pose #PIPA
                 if(("START_POSE_COLLECTION" == self.mission_modes[self.mission_mode_index]) or
                 ("APPEND_POSE" == self.mission_modes[self.mission_mode_index])):      
                     if(-1 == int(msg.axes[5])): 
@@ -279,8 +284,8 @@ class droneControler(Node):
                             # TODO call the SAVE function
                             self.saved_pose_indicator = 1
                             self.positions.store_coordinates_dict(self.vehicle.location.global_frame.lat,
-                                                                self.vehicle.location.global_frame.lon,
-                                                                self.vehicle.location.global_frame.alt)
+                                                                  self.vehicle.location.global_frame.lon,
+                                                                  self.vehicle.location.global_frame.alt)
                         else:
                             self.save_pose_counter += 1 
                             
@@ -329,27 +334,26 @@ class droneControler(Node):
             
 
 
-            # Controller LB => Enable button
-            if(1 == msg.buttons[4]):
+                # Controller LB => Enable button
+                if(1 == msg.buttons[4]):
 
-                if("GUIDED" == self.vehicle.mode.name):
-                    if(0 == (msg.axes[0])) and (0 == (msg.axes[1])) and (0 == (msg.axes[4])):   
-                        # send yaw intruction from the controller
-                        condition_yaw(self.vehicle, (round(msg.axes[3] * self.scaller , 6)), True) # math.degrees(self.vehicle.attitude.yaw) +     
+                    if("GUIDED" == self.vehicle.mode.name):
+                        if(0 == (msg.axes[0])) and (0 == (msg.axes[1])) and (0 == (msg.axes[4])):   
+                            # send yaw intruction from the controller
+                            condition_yaw(self.vehicle, (round(msg.axes[3] * self.scaller , 6)), True) # math.degrees(self.vehicle.attitude.yaw) +     
+                        else:
+                            # Send velocity from the controller              
+                            # send_ned_velocity(self.vehicle, msg.axes[0], msg.axes[1], (-1 * msg.axes[4]), 1) 
+                            send_global_velocity(self.vehicle, msg.axes[0], msg.axes[1], (-1 * msg.axes[4]), 1)     
                     elif("STABILIZE" == self.vehicle.mode.name):
-                        # Send velocity from the controller              
-                        # send_ned_velocity(self.vehicle, msg.axes[0], msg.axes[1], (-1 * msg.axes[4]), 1) 
-                        send_global_velocity(self.vehicle, msg.axes[0], msg.axes[1], (-1 * msg.axes[4]), 1)     
-                else:
-                    # # Channel 1: Roll <-- msg.axes[3]                    
-                    # # Channel 2: Pitch <-- msg.axes[1]                    
-                    # # Channel 3: Throttle <-- msg.axes[4]                   
-                    # # Channel 4: Yaw <-- msg.axes[0]
-                    self.vehicle.channels.overrides = {'1': RC_Converter(msg.axes[3], self.rc_scaller, -1), '2': RC_Converter(msg.axes[1], self.rc_scaller, -1),
-                                                       '3': RC_Converter(msg.axes[4], self.rc_scaller),     '4': RC_Converter(msg.axes[0], self.rc_scaller, -1)}
+                        # # Channel 1: Roll <-- msg.axes[3]                    
+                        # # Channel 2: Pitch <-- msg.axes[1]                    
+                        # # Channel 3: Throttle <-- msg.axes[4]                   
+                        # # Channel 4: Yaw <-- msg.axes[0]
+                        self.vehicle.channels.overrides = {'1': RC_Converter(msg.axes[3], self.rc_scaller, -1), '2': RC_Converter(msg.axes[1], self.rc_scaller, -1),
+                                                        '3': RC_Converter(msg.axes[4], self.rc_scaller),     '4': RC_Converter(msg.axes[0], self.rc_scaller, -1)}
         else:
             self.timer_counter += 1
-
 
 
 def main(args=None):

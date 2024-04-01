@@ -3,11 +3,12 @@ import os
 
 
 class Positions:
-    def __init__(self, init_from_file = False):
+    def __init__(self, droneID, init_from_file = False):
         self.positions = []
         self.pose_ID = 0
         self.dirname = os.path.dirname(__file__)
-        self.path = os.path.join(self.dirname, "pose_files/pose.json")        
+        self.path = os.path.join(self.dirname, f"pose_files/drone_{droneID}_pose.json")
+        self.droneID = droneID   
 
         if not (os.path.exists(os.path.join(self.dirname, "pose_files"))):
              os.makedirs(os.path.join(self.dirname, "pose_files"))
@@ -21,7 +22,8 @@ class Positions:
         "lat": lat,
         "lon": lon,
         "alt": alt,
-        "orientation": orientation
+        "orientation": orientation,
+        "droneID": self.droneID
         }
         self.positions.append(json.dumps(dict)) #,  indent = 5))
         self.pose_ID += 1
@@ -84,15 +86,15 @@ class Positions:
 #     }
 #     return dict            
 
-# y = Positions(False)
-# # print(y.get_pose_ID())
+# y = Positions(0, False)
+# print(y.get_pose_ID())
 
 # y.store_coordinates_dict(1, 2, 3)
 # y.store_coordinates_dict(4, 5, 6)
 # y.write_poses_to_file()
 
-# y = Positions(True)
-# # y.read_poses_from_file()
+# y = Positions(0, True)
+# y.read_poses_from_file()
 # print(y.get_pose(0))
 # print(y.get_pose(1))
 

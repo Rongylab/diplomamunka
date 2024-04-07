@@ -17,7 +17,9 @@ find_package(action_msgs REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/JoyID.msg"
-  "action/Countinng.action"  
+  "action/Countinng.action"
+  "action/Countinng2.action"
+  "action/Automission0.action"  
  )
 
 

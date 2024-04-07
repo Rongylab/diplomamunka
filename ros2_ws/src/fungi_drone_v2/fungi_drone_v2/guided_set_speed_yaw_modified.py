@@ -16,7 +16,7 @@ from pymavlink import mavutil # Needed for command message definitions
 import time
 import math
 
-from calculations import get_location_metres_mod, get_distance_metres_mod
+from calculations import get_location_metres_mod, get_distance_metres_mod, sign_difference_in_meters
 
 
 """
@@ -198,7 +198,7 @@ def goto_position_target_global_int_mod(vehicle, aLocation):
     See the above link for information on the type_mask (0=enable, 1=ignore). 
     At time of writing, acceleration and yaw bits are ignored.
     """
-
+    
     currentLocation = vehicle.location.global_relative_frame    
     targetDistance = get_distance_metres_mod(currentLocation, aLocation)
 
@@ -218,16 +218,125 @@ def goto_position_target_global_int_mod(vehicle, aLocation):
     # # send command to vehicle
     # vehicle.send_mavlink(msg)
 
-    vehicle.simple_goto(aLocation)
+    vehicle.simple_goto(aLocation, airspeed = 0.5)
     
     while (vehicle.mode.name == "GUIDED"): #Stop action if we are no longer in guided mode.
         #print "DEBUG: mode: %s" % vehicle.mode.name
         remainingDistance = get_distance_metres_mod(vehicle.location.global_relative_frame, aLocation)
+
+        print("Target location:")
+        print(aLocation)
+        print("Vehicle location:")
+        print(vehicle.location.global_relative_frame)
         print("Distance to target: ", remainingDistance)
-        if(remainingDistance <= targetDistance*0.10): #Just below target, in case of undershoot.
+
+        if(remainingDistance <= targetDistance*0.20): #Just below target, in case of undershoot.
             print("Reached target")
             break
         time.sleep(1)
+        # vehicle.simple_goto(aLocation, airspeed = 0.5)
+
+
+def goto_position_target_global_int_mod_v2(vehicle, aLocation):
+    """
+    Send SET_POSITION_TARGET_GLOBAL_INT command to request the vehicle fly to a specified LocationGlobal.
+
+    For more information see: https://pixhawk.ethz.ch/mavlink/#SET_POSITION_TARGET_GLOBAL_INT
+
+    See the above link for information on the type_mask (0=enable, 1=ignore). 
+    At time of writing, acceleration and yaw bits are ignored.
+    """
+    remainingDistance_cnt = 0
+    remainingDistance_prev = 0
+    simple_pose_control_f = False
+    targetLocation = aLocation
+
+    currentLocation=vehicle.location.global_relative_frame
+    # targetLocation=get_location_metres(currentLocation, dNorth, dEast)
+    targetDistance=get_distance_metres(currentLocation, targetLocation)
+    # gotoFunction(targetLocation)
+      
+    # targetDistance = get_distance_metres_mod(currentLocation, aLocation)
+    
+
+    # msg = vehicle.message_factory.set_position_target_global_int_encode(
+    #     0,       # time_boot_ms (not used)
+    #     0, 0,    # target system, target component
+    #     mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT_INT, # frame
+    #     0b0000111111111000, # type_mask (only speeds enabled)
+    #     aLocation.lat*1e7, # lat_int - X Position in WGS84 frame in 1e7 * meters
+    #     aLocation.lon*1e7, # lon_int - Y Position in WGS84 frame in 1e7 * meters
+    #     aLocation.alt, # alt - Altitude in meters in AMSL altitude, not WGS84 if absolute or relative, above terrain if GLOBAL_TERRAIN_ALT_INT
+    #     0, # X velocity in NED frame in m/s
+    #     0, # Y velocity in NED frame in m/s
+    #     0, # Z velocity in NED frame in m/s
+    #     0, 0, 0, # afx, afy, afz acceleration (not supported yet, ignored in GCS_Mavlink)
+    #     0, 0)    # yaw, yaw_rate (not supported yet, ignored in GCS_Mavlink) 
+    # # send command to vehicle
+    # vehicle.send_mavlink(msg)
+
+    vehicle.simple_goto(aLocation, airspeed = 0.5)
+    
+    while (vehicle.mode.name == "GUIDED"): #Stop action if we are no longer in guided mode.
+        remainingDistance=get_distance_metres(vehicle.location.global_frame, targetLocation)
+
+
+        print("")
+        if(simple_pose_control_f == False):
+            print("remainingDistance_cnt:", remainingDistance_cnt)
+        print("vehicle.location.global_frame", vehicle.location.global_frame)
+        print("targetLocation", targetLocation)        
+
+        print("Distance to target: ", remainingDistance)
+        # print("targetDistance: ", targetDistance)
+        # print("targetDistance * 0.33 ", targetDistance * 0.33 )
+
+
+        if(remainingDistance <= (targetDistance*0.1)): #Just below target, in case of undershoot.
+            print("Reached target")
+            if(simple_pose_control_f):
+                send_global_velocity(vehicle, 0, 0, 0, 1)
+            break
+
+        if(abs(remainingDistance - remainingDistance_prev) > 0.3):
+            remainingDistance_prev = remainingDistance
+            remainingDistance_cnt = 0
+
+        elif(remainingDistance_cnt < 20):
+            remainingDistance_cnt += 1
+        else:
+            simple_pose_control_f = True
+        
+        if(simple_pose_control_f):
+            
+            print("Mode simple pose control")
+            pose2 = targetLocation
+            pose1 = vehicle.location.global_frame
+
+            distance_lat, distance_lon = sign_difference_in_meters(pose1.lat, pose1.lon, pose2.lat, pose2.lon)
+
+            print("distance_lat", distance_lat)
+            print("distance_lon", distance_lon)
+
+            if(distance_lat > 0):
+                lat_x_vel = distance_lat if distance_lat < 0.2 else 0.2
+            else:
+                lat_x_vel = distance_lat if abs(distance_lat) < 0.2 else -0.2
+
+            if(distance_lon > 0):
+                lon_y_vel = distance_lon if distance_lon < 0.2 else 0.2
+            else:
+                lon_y_vel = distance_lon if abs(distance_lon) < 0.2 else -0.2
+            
+
+            print("lat_x_vel", lat_x_vel)
+            print("lon_y_vel", lon_y_vel)
+
+            send_global_velocity(vehicle, lat_x_vel, lon_y_vel, 0, 1)  
+
+        # distance_lat, distance_lon = haversine2(pose1["lat"], pose1["lon"], pose2["lat"], pose2["lon"])
+        # if remaining distance is the same at least 20 times then 
+        time.sleep(0.1)
 
 
 
@@ -405,6 +514,8 @@ def arm_disarm(vehicle):
             time.sleep(1)
         print("armed!")
 
+
+# TODO Function overload ISSUE!!!!!
 """ Upper limit 10  [m/s]
     Lower limit 0.1 [m/s] """
 def set_vehicle_speed(vehicle, axes_value):

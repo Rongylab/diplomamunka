@@ -33,7 +33,7 @@ print("Start simulator (SITL)")
 from dronekit import connect, VehicleMode, LocationGlobal, LocationGlobalRelative
 # import calculations as calc
 from guided_set_speed_yaw_modified import goto, condition_yaw, goto_position_target_global_int_mod, send_ned_velocity
-from guided_set_speed_yaw_modified import RC_Converter, send_global_velocity, arm_disarm, set_vehicle_speed
+from guided_set_speed_yaw_modified import RC_Converter, send_global_velocity, arm_disarm, set_vehicle_speed, goto_position_target_global_int_mod_v2
 from drone_kit import arm_and_takeoff
 
 
@@ -56,8 +56,17 @@ from fungi_msgs.msg import JoyID
 # from mavros_msgs.srv import SetMode
 # from mavros_msgs.srv import CommandTOL
 import math
-
 # pi_2 = math.pi / 2.0
+
+import time
+import sys
+
+import rclpy
+from rclpy.action import ActionServer, CancelResponse, GoalResponse
+from rclpy.callback_groups import ReentrantCallbackGroup
+from rclpy.executors import MultiThreadedExecutor
+
+from fungi_msgs.action import Automission0
 
 
 
@@ -74,9 +83,8 @@ class droneControler(Node):
             10)
         self.subscription
 
-        timer_period = 0.2  # seconds
-        self.timer = self.create_timer(timer_period, self.timer_callback)
-
+        self.timer_period = 0.2  # seconds
+        self.timer = self.create_timer(self.timer_period, self.timer_callback)
         self.timer_counter = 10
         self.seconds = [0, 0]
 
@@ -99,7 +107,7 @@ class droneControler(Node):
         self.saved_pose_indicator = 0
         self.file_writing_indicator = 0
 
-        self.mission_modes = ["START_MISSION", "START_POSE_COLLECTION", "APPEND_POSE", "RETURN_HOME", "STOP_MISSION"]
+        self.mission_modes = ["On_MISSION", "START_POSE_COLLECTION", "APPEND_POSE", "RETURN_HOME", "STOP_MISSION"]
         self.mission_mode_index = 1
         self.mission_mode_counter = 1
         self.start_mission_counter = 1
@@ -129,10 +137,28 @@ class droneControler(Node):
         print("Global Location (relative altitude): %s" % self.vehicle.location.global_relative_frame)
 
         self.vehicle.mode    = VehicleMode("GUIDED")
-        self.vehicle.airspeed = 0.5     
+        self.vehicle.airspeed = 0.05
+        self.vehicle.groundspeed = 0.05
 
 
-                
+
+        # Action server settings
+
+        # module_name = "module_1"
+        # module_obj = __import__(module_name)
+
+        self.selected_action = Automission0
+
+
+        self._action_server = ActionServer(
+            self,
+            self.selected_action,
+            f"missionsaction{self.ID}",
+            execute_callback=self.generate_execute_callback(self.selected_action),
+            callback_group=ReentrantCallbackGroup(),
+            goal_callback=self.goal_callback,
+            cancel_callback=self.cancel_callback)
+         
         # self.y = pos.Positions(init_from_file = True)
        
         # arm_and_takeoff(self.vehicle, 2)
@@ -156,13 +182,99 @@ class droneControler(Node):
         #     print("")
 
         #     time.sleep(5)
-        
+    
+    def generate_execute_callback(self, selected_action):
+        async def execute_callback(goal_handle):
+            self.get_logger().info("Starting Mission")
+
+            feedback_msg = self.selected_action.Feedback()
+
+            # Initiate the feedback message’s current_num as the action request’s starting_num
+            feedback_msg.current_num = goal_handle.request.start
+
+            target_positions = pos.Positions(self.ID, init_from_file = True)
+
+    # LOGIC START
+            # while feedback_msg.current_num > 0:
+            for ID in range(target_positions.get_pose_ID()):            
+                if goal_handle.is_cancel_requested:
+                    goal_handle.canceled()
+                    self.get_logger().info('Goal canceled')
+                    return self.selected_action.Result()
+                
+                pose = target_positions.get_pose(ID)
+                new_pose = LocationGlobal(float(pose["lat"]), float(pose["lon"]), float(pose["alt"])) 
+                # self.vehicle.simple_goto(new_pose, airspeed = 0.5) # --> Tökjól működik!!!!!
+                # goto_position_target_global_int_mod(self.vehicle, new_pose)
+                goto_position_target_global_int_mod_v2(self.vehicle, new_pose)
+
+                # Increment the feedback message’s current_num
+                feedback_msg.current_num +=  1
+
+                # Print log messages
+                # self.get_logger().info('Feedback: {0}'.format(feedback_msg.current_num))
+                goal_handle.publish_feedback(feedback_msg)
+
+                # Wait a second before counting down to the next number
+                time.sleep(1)
+
+            # Return to the base
+            for ID in range(target_positions.get_pose_ID()-2, -1, -1):
+                if goal_handle.is_cancel_requested:
+                    goal_handle.canceled()
+                    self.get_logger().info('Goal canceled')
+                    return self.selected_action.Result()
+                
+                pose = target_positions.get_pose(ID)
+                new_pose = LocationGlobal(float(pose["lat"]), float(pose["lon"]), float(pose["alt"])) #(pose["lat"], pose["lon"], pose["alt"]) 
+                # self.vehicle.simple_goto(new_pose, airspeed = 0.5) # --> Tökjól működik!!!!!
+                goto_position_target_global_int_mod_v2(self.vehicle, new_pose)
+
+                # Increment the feedback message’s current_num
+                feedback_msg.current_num +=  1
+
+                # Print log messages
+                # self.get_logger().info('Feedback: {0}'.format(feedback_msg.current_num))
+                goal_handle.publish_feedback(feedback_msg)
+                time.sleep(1)
+
+                #Turn around
+            condition_yaw(self.vehicle, 180, True)
+            time.sleep(5)
+                #Land
+            self.vehicle.mode = VehicleMode("LAND")
+
+    # LOGIC END
+            # self.timer = self.create_timer(self.timer_period, self.timer_callback)
+            goal_handle.succeed()
+            result = self.selected_action.Result()
+            result.is_finished = True
+            return result
+        return execute_callback
+    
+    def goal_callback(self, goal_request):
+        """Accept or reject a client request to begin an action."""
+        # This server allows multiple goals in parallel
+
+        # self.timer.cancel()
+        self.get_logger().info('Received goal request')
+        self.mission_mode_index = 0
+        return GoalResponse.ACCEPT
+
+    def cancel_callback(self, goal_handle):
+        """Accept or reject a client request to cancel an action."""
+        self.get_logger().info('Received cancel request')
+        return CancelResponse.ACCEPT
+
+
+
     def __del__(self):
         self.vehicle.close()
         print("vehicle disconnected")
 
     def timer_callback(self):
-        self.console_log(self.vehicle)
+        # self.console_log(self.vehicle)
+        a = 1
 
     def console_log(self, veichle):
         os.system('clear') 
@@ -195,11 +307,7 @@ class droneControler(Node):
                 self.saved_pose_indicator = 0
                 self.file_writing_indicator = 0      
 
-        
-              
-        
-        
-    
+      
     # def console_log(self, veichle, msg):
     #     os.system('clear') 
     #     print("current flight mode: %s" % self.vehicle.mode.name)
@@ -228,7 +336,7 @@ class droneControler(Node):
                 #     self.log_counter += 1
             
 
-                # Controller Y => armed/disarmed  #PIPA
+                # Controller Y => armed/disarmed  
                 if(1 == msg.buttons[3]):
                     if("GUIDED" == self.vehicle.mode.name):
                         arm_and_takeoff(self.vehicle, 2, "GUIDED")    
@@ -236,7 +344,7 @@ class droneControler(Node):
                         arm_and_takeoff(self.vehicle, 0, "STABILIZE")
                     # arm_disarm(self.vehicle)
                     
-                # Controller Cross Lef/Right => change mode #PIPA
+                # Controller Cross Lef/Right => change mode 
                 if((1 == int(msg.axes[6])) or (-1 == int(msg.axes[6]))):
 
                     if(0 == (self.flight_mode_counter % 5)):
@@ -259,11 +367,11 @@ class droneControler(Node):
                     else:
                         self.flight_mode_counter += 1
                     
-                # Controller RB accept the new flight mode #PIPA
+                # Controller RB accept the new flight mode 
                 if(1 == msg.buttons[5]):   
                     self.vehicle.mode  = VehicleMode(self.flight_modes[self.flight_mode_index])         
 
-                # Controller Cross up/down => change movement speed #PIPA
+                # Controller Cross up/down => change movement speed 
                 if((1 == int(msg.axes[7])) or (-1 == int(msg.axes[7]))):
                     if(0 == (self.airspeed_counter % 5)):
                         self.airspeed_counter = 1
@@ -275,7 +383,7 @@ class droneControler(Node):
                     else:
                         self.airspeed_counter += 1
 
-                # Controller RT => Save pose #PIPA
+                # Controller RT => Save pose 
                 if(("START_POSE_COLLECTION" == self.mission_modes[self.mission_mode_index]) or
                 ("APPEND_POSE" == self.mission_modes[self.mission_mode_index])):      
                     if(-1 == int(msg.axes[5])): 
@@ -313,12 +421,12 @@ class droneControler(Node):
                             self.start_mission_index = 1
                             if("START_POSE_COLLECTION" == self.mission_modes[self.mission_mode_index]):                            
                                 # Create an empty position store object
-                                self.positions = pos.Positions(init_from_file = False)   
+                                self.positions = pos.Positions(self.ID, init_from_file = False)   
                             elif("APPEND_POSE" == self.mission_modes[self.mission_mode_index]): 
                                 if(None == self.positions):
-                                    self.positions = pos.Positions(init_from_file = True)                            
+                                    self.positions = pos.Positions(self.ID, init_from_file = True)                            
                             # else:
-                            #     self.start_mission_index = 0
+                            #     self.start_mission_index = s0
                         else:
                             if(("START_POSE_COLLECTION" == self.mission_modes[self.mission_mode_index]) or 
                             ("APPEND_POSE" == self.mission_modes[self.mission_mode_index])):                            
@@ -360,8 +468,9 @@ def main(args=None):
     rclpy.init(args=args)
 
     minimal_subscriber = droneControler()
+    executor = MultiThreadedExecutor()
 
-    rclpy.spin(minimal_subscriber)
+    rclpy.spin(minimal_subscriber, executor=executor)
 
     # Destroy the node explicitly
     # (optional - otherwise it will be done automatically

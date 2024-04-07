@@ -96,6 +96,35 @@ def get_location_metres_mod(original_location, dNorth, dEast):
     return targetlocation
 
 
+# lat,lon 1 = vehicle pose
+# lat,lon 2 = target pose
+def sign_difference_in_meters(lat1, lon1, lat2, lon2):
+    R = 6371.0  # Earth radius in kilometers
+
+    # Convert latitude and longitude from degrees to radians
+    lat1_rad = math.radians(lat1)
+    lon1_rad = math.radians(lon1)
+    lat2_rad = math.radians(lat2)
+    lon2_rad = math.radians(lon2)
+
+    # Haversine formula for latitude
+    dlat_rad = lat2_rad - lat1_rad
+    a_lat = math.sin(dlat_rad / 2)**2
+    c_lat = 2 * math.atan2(math.sqrt(a_lat), math.sqrt(1 - a_lat))
+    distance_lat = R * c_lat * 1000  # Convert distance to meters
+
+    # Haversine formula for longitude
+    dlon_rad = lon2_rad - lon1_rad
+    a_lon = math.sin(dlon_rad / 2)**2
+    c_lon = 2 * math.atan2(math.sqrt(a_lon), math.sqrt(1 - a_lon))
+    distance_lon = R * c_lon * 1000  # Convert distance to meters
+
+    lat_sing = 1 if((lat2 - lat1) > 0) else -1
+    lon_sing = 1 if((lon2 - lon1) > 0)  else -1
+
+    return (distance_lat * lat_sing), (distance_lon * lon_sing)
+
+
 
 
 # LocationGlobal:lat=-35.3632619,lon=149.1652376,alt=586.02
@@ -109,7 +138,7 @@ def get_location_metres_mod(original_location, dNorth, dEast):
 # lat=-35.3632159,lon=149.1652354,alt=585.96
 # lat=-35.3632157,lon=149.1652344,alt=585.96
 
-print("diff lat: %f" % diff_in_meter(-35.3632159, -35.3632157))
-print("diff lon: %f" % diff_in_meter(149.1652354, 149.1652344, 1))
+# print("diff lat: %f" % diff_in_meter(-35.3632159, -35.3632157))
+# print("diff lon: %f" % diff_in_meter(149.1652354, 149.1652344, 1))
 # print("diff alt: %f" % diff_in_meter(586.02, 585.97))
 

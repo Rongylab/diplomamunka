@@ -32,7 +32,7 @@ class Positions:
         return self.positions
     
     def get_pose(self, pose_ID):
-        return self.positions[pose_ID]
+        return json.loads(self.positions[pose_ID])
     
     def set_pose_ID(self, new_pose_ID):
         self.pose_ID = new_pose_ID
@@ -92,11 +92,20 @@ class Positions:
 # y.store_coordinates_dict(1, 2, 3)
 # y.store_coordinates_dict(4, 5, 6)
 # y.write_poses_to_file()
+            
+
+# from dronekit import LocationGlobal
+# import json
 
 # y = Positions(0, True)
-# y.read_poses_from_file()
-# print(y.get_pose(0))
-# print(y.get_pose(1))
+# # y.read_poses_from_file()
+# # print(y.get_pose(0))
+# # print(y.get_pose(1))
+
+# pose = y.get_pose(0)
+# res = json.loads(pose)
+# new_pose = LocationGlobal(res["lat"], res["lon"], res["alt"]) 
+# print(new_pose)
 
 # y.store_coordinates_dict(7, 8, 9)
 # y.store_coordinates_dict(10, 11, 12)

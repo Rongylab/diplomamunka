@@ -1,0 +1,250 @@
+<sdf version='1.10'>
+  <world name='empty_hall'>
+    <physics name='1ms' type='ignored'>
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
+    </physics>
+
+    <!-- <plugin name='gz::sim::systems::Physics' filename='gz-sim-physics-system'/> -->
+    <!-- <plugin name='gz::sim::systems::UserCommands' filename='gz-sim-user-commands-system'/> -->
+    <!-- <plugin name='gz::sim::systems::SceneBroadcaster' filename='gz-sim-scene-broadcaster-system'/> -->
+    <!-- <plugin name='gz::sim::systems::Contact' filename='gz-sim-contact-system'/> -->
+
+    <plugin filename="gz-sim-physics-system"
+      name="gz::sim::systems::Physics">
+    </plugin>
+    <plugin
+      filename="gz-sim-sensors-system"
+      name="gz::sim::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+    <plugin filename="gz-sim-user-commands-system"
+      name="gz::sim::systems::UserCommands">
+    </plugin>
+    <plugin filename="gz-sim-scene-broadcaster-system"
+      name="gz::sim::systems::SceneBroadcaster">
+    </plugin>
+    <plugin filename="gz-sim-air-pressure-system"
+      name="gz::sim::systems::AirPressure">
+    </plugin>
+    <plugin filename="gz-sim-air-speed-system"
+      name="gz::sim::systems::AirSpeed">
+    </plugin>
+    <plugin filename="gz-sim-altimeter-system"
+      name="gz::sim::systems::Altimeter">
+    </plugin>
+    <plugin filename="gz-sim-imu-system"
+      name="gz::sim::systems::Imu">
+    </plugin>
+    <plugin filename="gz-sim-magnetometer-system"
+      name="gz::sim::systems::Magnetometer">
+    </plugin>
+    <plugin filename="gz-sim-navsat-system"
+      name="gz::sim::systems::NavSat">
+    </plugin>
+    <plugin filename='gz-sim-contact-system'
+      name='gz::sim::systems::Contact'>
+    </plugin>
+
+    <gravity>0 0 -9.8000000000000007</gravity>
+    <magnetic_field>5.5644999999999998e-06 2.2875799999999999e-05 -4.2388400000000002e-05</magnetic_field>
+    <atmosphere type='adiabatic'/>
+
+    <scene>
+      <ambient>0.400000006 0.400000006 0.400000006 1</ambient>
+      <background>0.699999988 0.699999988 0.699999988 1</background>
+      <shadows>true</shadows>
+      <grid>false</grid>
+    </scene>
+
+    <spherical_coordinates>
+      <latitude_deg> 0.0 </latitude_deg>      <!-- -35.3632621 -->
+      <longitude_deg> 0.0 </longitude_deg>    <!-- 149.1652374  -->
+      <elevation>10.0</elevation>
+      <heading_deg>0</heading_deg>
+      <surface_model>EARTH_WGS84</surface_model>
+    </spherical_coordinates>
+
+    
+
+    <model name='ground_plane'>
+      <static>true</static>
+      <link name='link'>
+        <collision name='collision'>
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>40 10</size>
+            </plane>
+          </geometry>
+          <surface>
+            <friction>
+              <ode/>
+            </friction>
+            <bounce/>
+            <contact/>
+          </surface>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>40 10</size>
+            </plane>
+          </geometry>
+          <material>
+            <ambient>0.800000012 0.800000012 0.800000012 1</ambient>
+            <diffuse>0.800000012 0.800000012 0.800000012 1</diffuse>
+            <specular>0.800000012 0.800000012 0.800000012 1</specular>
+          </material>
+        </visual>
+        <pose>0 0 0 0 0 0</pose>
+        <inertial>
+          <pose>0 0 0 0 0 0</pose>
+          <mass>1</mass>
+          <inertia>
+            <ixx>1</ixx>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyy>1</iyy>
+            <iyz>0</iyz>
+            <izz>1</izz>
+          </inertia>
+        </inertial>
+        <enable_wind>false</enable_wind>
+      </link>
+      <pose>0 0 0 0 0 0</pose>
+      <self_collide>false</self_collide>
+    </model>
+
+    <model name="shelf_1">
+      <static>true</static>
+      <pose> -13.275 -5 0 0 0 0</pose>
+      <link name="shelf_1_link">
+        <inertial>
+          <mass>2</mass>
+        </inertial>
+        <collision name="shelf_1_collision">
+        <pose relative_to="shelf_1_link" degrees="true"> 14.275 0.69 1.825 0 0 0 </pose>
+        <geometry>
+          <box>
+            <size>28.55 1.38 3.65 </size>  <!-- 28.55 3.65 1.38 -->
+          </box>
+        </geometry>
+        </collision>
+        <visual name="shelf_1_visual">
+          <geometry>
+            <mesh>
+              <uri>model://home/drone/diplomamunka/ros2_ws/src/fungi_drone/models/Polcrendszer_v02.dae</uri>  <!-- TODO Relative path -->
+            </mesh>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+
+    <model name="shelf_2">
+      <static>true</static>
+      <pose> -13.275 -2.12 0 0 0 0</pose>
+      <link name="shelf_2_link">
+        <inertial>
+          <mass>2</mass>
+        </inertial>
+        <collision name="shelf_2_collision">
+          <pose relative_to="shelf_2_link" degrees="true"> 14.275 0.69 1.825 0 0 0 </pose>
+          <geometry>
+          <box>
+            <size>28.55 1.38 3.65</size>
+          </box>
+        </geometry>
+        </collision>
+        <visual name="shelf_2_visual">
+          <geometry>
+            <mesh>
+              <uri>model://home/drone/diplomamunka/ros2_ws/src/fungi_drone/models/Polcrendszer_v02.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+
+    <model name="shelf_3">
+      <static>true</static>
+      <pose> -13.275 0.76 0 0 0 0</pose>
+      <link name="shelf_3_link">
+        <inertial>
+          <mass>2</mass>
+        </inertial>
+        <collision name="shelf_3_collision">
+          <pose relative_to="shelf_3_link" degrees="true"> 14.275 0.69 1.825 0 0 0 </pose>
+          <geometry>
+          <box>
+            <size>28.55 1.38 3.65</size>
+          </box>
+        </geometry>
+        </collision>
+        <visual name="shelf_3_visual">
+          <geometry>
+            <mesh>
+              <uri>model://home/drone/diplomamunka/ros2_ws/src/fungi_drone/models/Polcrendszer_v02.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+
+    <model name="shelf_4">
+      <static>true</static>
+      <pose> -13.275 3.64 0 0 0 0</pose>
+      <link name="shelf_4_link">
+        <inertial>
+          <mass>2</mass>
+        </inertial>
+        <collision name="shelf_4_collision">
+          <pose relative_to="shelf_4_link" degrees="true"> 14.275 0.69 1.825 0 0 0 </pose>
+          <geometry>
+          <box>
+            <size>28.55 1.38 3.65</size>
+          </box>
+        </geometry>
+        </collision>
+        <visual name="shelf_4_visual">
+          <geometry>
+            <mesh>
+              <uri>model://home/drone/diplomamunka/ros2_ws/src/fungi_drone/models/Polcrendszer_v02.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+  
+
+    <light name='sun' type='directional'>
+      <pose>0 0 10 0 0 0</pose>
+      <cast_shadows>true</cast_shadows>
+      <intensity>1</intensity>
+      <direction>-0.5 0.10000000000000001 -0.90000000000000002</direction>
+      <diffuse>0.800000012 0.800000012 0.800000012 1</diffuse>
+      <specular>0.200000003 0.200000003 0.200000003 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <linear>0.01</linear>
+        <constant>0.90000000000000002</constant>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <spot>
+        <inner_angle>0</inner_angle>
+        <outer_angle>0</outer_angle>
+        <falloff>0</falloff>
+      </spot>
+    </light>
+
+    <include>
+      <uri>model://iris_with_lidar</uri> <!-- iris_with_lidar  iris_with_gimbal --> 
+      <name>iris</name>
+      <pose degrees="true">0 0 1 0 0 0</pose>  <!-- Z 0.194923 -->
+    </include>
+
+  </world>
+</sdf>
+

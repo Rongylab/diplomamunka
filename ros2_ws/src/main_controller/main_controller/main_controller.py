@@ -26,6 +26,7 @@ class mainController(Node):
     def __init__(self):
         super().__init__("mainController")
         
+        self.AUTOMAT_MODE = True
         self.ID = 0
         self.selected_action = Automission0
 
@@ -40,10 +41,16 @@ class mainController(Node):
         # Create Action client 
         self._action_client = ActionClient(self, Automission0, f"missionsaction{self.ID}")
 
-        # Create Timer
+        # Create Timers
         self.timer_period = 0.2  # seconds
         self.timer = self.create_timer(self.timer_period, self.timer_callback)
+
+        # Start mission timer
+        self.star_misson_timer = self.create_timer(10, self.star_misson_timer_callback)
         
+        if(self.AUTOMAT_MODE == False):
+            self.star_misson_timer.cancel()
+
         # Create Pupblisher
         self.publisher_ = self.create_publisher(JoyID, 'joyid', 10)
 
@@ -100,6 +107,10 @@ class mainController(Node):
 
     def timer_callback(self):
         self.console_log()
+
+    def star_misson_timer_callback(self):
+        self.send_goal(True)
+        self.star_misson_timer.cancel()
 
     def console_log(self):
         os.system('clear')
@@ -170,6 +181,7 @@ class mainController(Node):
         self.get_logger().info('Result: {0}'.format(result.is_finished))
         self.misson = 0
         self.timer = self.create_timer(self.timer_period, self.timer_callback)
+        self.star_misson_timer = self.create_timer(10, self.star_misson_timer_callback)
         # rclpy.shutdown()
     
     def cancel_done(self, future):
@@ -179,7 +191,7 @@ class mainController(Node):
         else:
             self.get_logger().info('Goal failed to cancel')
 
-        rclpy.shutdown()
+        # rclpy.shutdown()
 
     # def timer_callback(self):
     #     # self.get_logger().info('Canceling goal')

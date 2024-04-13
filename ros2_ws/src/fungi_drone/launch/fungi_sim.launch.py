@@ -62,10 +62,10 @@ def generate_launch_description():
             [
                 PathJoinSubstitution(
                     [
-                        FindPackageShare("ardupilot_gz_bringup"),
+                        FindPackageShare("fungi_drone"), # "ardupilot_gz_bringup" package_name
                         "launch",
-                        "robots",
-                        "iris_lidar.launch.py",
+                        # "robots",
+                        "fungi_iris.launch.py", # iris_lidar fungi_iris.launch
                     ]
                 ),
             ]
@@ -79,7 +79,7 @@ def generate_launch_description():
         ),
         launch_arguments={
             "gz_args": "-v4 -s -r "
-            + os.path.join(pkg_project_gazebo, "worlds", "empty.sdf") # "fungi_hall.sdf"
+            + os.path.join(pkg_project_gazebo, "worlds", "empty.sdf") # "empty.sdf", empty_hall
         }.items(),
     )
 

@@ -83,6 +83,11 @@ class droneControler(Node):
             10)
         self.subscription
 
+        # DEBUG Switch
+        self.debug_enable = False
+        self.simulation_active = True
+
+
         self.timer_period = 0.2  # seconds
         self.timer = self.create_timer(self.timer_period, self.timer_callback)
         self.timer_counter = 10
@@ -140,6 +145,11 @@ class droneControler(Node):
         self.vehicle.airspeed = 0.05
         self.vehicle.groundspeed = 0.05
 
+        # cam_pitch and cam_roll can be ignored, it is necessary for the simulation purposes
+        self.cam_pitch = 0
+        self.cam_roll = 0
+        
+        self.dummy_local_var = 0
 
 
         # Action server settings
@@ -196,6 +206,11 @@ class droneControler(Node):
 
     # LOGIC START
             # while feedback_msg.current_num > 0:
+
+            # self.vehicle.mode = VehicleMode("GUIDED")
+            arm_and_takeoff(self.vehicle, 2, "GUIDED")  
+
+
             for ID in range(target_positions.get_pose_ID()):            
                 if goal_handle.is_cancel_requested:
                     goal_handle.canceled()
@@ -217,7 +232,8 @@ class droneControler(Node):
 
                 # Wait a second before counting down to the next number
                 time.sleep(1)
-
+            
+            time.sleep(2)
             # Return to the base
             for ID in range(target_positions.get_pose_ID()-2, -1, -1):
                 if goal_handle.is_cancel_requested:
@@ -239,10 +255,11 @@ class droneControler(Node):
                 time.sleep(1)
 
                 #Turn around
-            condition_yaw(self.vehicle, 180, True)
-            time.sleep(5)
+            # condition_yaw(self.vehicle, 180, True)
+            # time.sleep(5)
                 #Land
             self.vehicle.mode = VehicleMode("LAND")
+            time.sleep(10)
 
     # LOGIC END
             # self.timer = self.create_timer(self.timer_period, self.timer_callback)
@@ -267,14 +284,30 @@ class droneControler(Node):
         return CancelResponse.ACCEPT
 
 
+    def gimbal_rotate(self, cam_yaw = 0):
+        if(self.debug_enable == True):
+            if(self.simulation_active == True):
+                self.vehicle.gimbal.rotate(self.cam_pitch, self.cam_roll, cam_yaw)
+                print("cam_yaw", cam_yaw)
+        # TODO Write here the necessary IO function which can handle the camera's servo state    
+
 
     def __del__(self):
         self.vehicle.close()
         print("vehicle disconnected")
 
     def timer_callback(self):
-        # self.console_log(self.vehicle)
-        a = 1
+        
+        self.console_log(self.vehicle)
+        # self.dummy_local_var += 1 
+        # print(self.dummy_local_var)
+        # if(self.dummy_local_var == 20):            
+        #     self.gimbal_rotate(0)
+            
+        # if(self.dummy_local_var == 40):            
+        #     self.gimbal_rotate(90)
+        #     self.dummy_local_var = 0
+        
 
     def console_log(self, veichle):
         os.system('clear') 

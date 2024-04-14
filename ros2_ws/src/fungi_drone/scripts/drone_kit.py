@@ -12,6 +12,7 @@ from guided_set_speed_yaw_modified import goto, condition_yaw, goto_position_tar
 # from guided_set_speed_yaw import goto_position_target_global_int
 
 from mavproxy_fakegps import init
+from pymavlink import mavutil
 
 import json
 import positions as pos
@@ -72,6 +73,174 @@ def simple_goto(vehicle, x, y, z):
 
 
 
+def get_location_metres(original_location, dNorth, dEast):
+    """
+    Returns a LocationGlobal object containing the latitude/longitude `dNorth` and `dEast` metres from the 
+    specified `original_location`. The returned LocationGlobal has the same `alt` value
+    as `original_location`.
+
+    The function is useful when you want to move the vehicle around specifying locations relative to 
+    the current vehicle position.
+
+    The algorithm is relatively accurate over small distances (10m within 1km) except close to the poles.
+
+    For more information see:
+    http://gis.stackexchange.com/questions/2951/algorithm-for-offsetting-a-latitude-longitude-by-some-amount-of-meters
+    """
+    earth_radius = 6378137.0 #Radius of "spherical" earth
+    #Coordinate offsets in radians
+    dLat = dNorth/earth_radius
+    dLon = dEast/(earth_radius*math.cos(math.pi*original_location.lat/180))
+
+    #New position in decimal degrees
+    newlat = original_location.lat + (dLat * 180/math.pi)
+    newlon = original_location.lon + (dLon * 180/math.pi)
+    if type(original_location) is LocationGlobal:
+        targetlocation=LocationGlobal(newlat, newlon,original_location.alt)
+    elif type(original_location) is LocationGlobalRelative:
+        targetlocation=LocationGlobalRelative(newlat, newlon,original_location.alt)
+    else:
+        raise Exception("Invalid Location object passed")
+        
+    return targetlocation
+
+
+def get_distance_metres(aLocation1, aLocation2):
+    """
+    Returns the ground distance in metres between two LocationGlobal objects.
+
+    This method is an approximation, and will not be accurate over large distances and close to the 
+    earth's poles. It comes from the ArduPilot test code: 
+    https://github.com/diydrones/ardupilot/blob/master/Tools/autotest/common.py
+    """
+    dlat = aLocation2.lat - aLocation1.lat
+    dlong = aLocation2.lon - aLocation1.lon
+    return math.sqrt((dlat*dlat) + (dlong*dlong)) * 1.113195e5
+
+
+def send_global_velocity(vehicle, velocity_x, velocity_y, velocity_z, duration):
+    """
+    Move vehicle in direction based on specified velocity vectors.
+
+    This uses the SET_POSITION_TARGET_GLOBAL_INT command with type mask enabling only 
+    velocity components 
+    (http://dev.ardupilot.com/wiki/copter-commands-in-guided-mode/#set_position_target_global_int).
+    
+    Note that from AC3.3 the message should be re-sent every second (after about 3 seconds
+    with no message the velocity will drop back to zero). In AC3.2.1 and earlier the specified
+    velocity persists until it is canceled. The code below should work on either version 
+    (sending the message multiple times does not cause problems).
+    
+    See the above link for information on the type_mask (0=enable, 1=ignore). 
+    At time of writing, acceleration and yaw bits are ignored.
+    """
+    msg = vehicle.message_factory.set_position_target_global_int_encode(
+        0,       # time_boot_ms (not used)
+        0, 0,    # target system, target component
+        mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT_INT, # frame
+        0b0000111111000111, # type_mask (only speeds enabled)
+        0, # lat_int - X Position in WGS84 frame in 1e7 * meters
+        0, # lon_int - Y Position in WGS84 frame in 1e7 * meters
+        0, # alt - Altitude in meters in AMSL altitude(not WGS84 if absolute or relative)
+        # altitude above terrain if GLOBAL_TERRAIN_ALT_INT
+        velocity_x, # X velocity in NED frame in m/s
+        velocity_y, # Y velocity in NED frame in m/s
+        velocity_z, # Z velocity in NED frame in m/s
+        0, 0, 0, # afx, afy, afz acceleration (not supported yet, ignored in GCS_Mavlink)
+        0, 0)    # yaw, yaw_rate (not supported yet, ignored in GCS_Mavlink) 
+
+    vehicle.send_mavlink(msg)
+    
+    # # send command to vehicle on 1 Hz cycle
+    # for x in range(0,duration):
+    #     vehicle.send_mavlink(msg)
+    #     time.sleep(1)   
+
+
+def goto_original(dNorth, dEast, vehicle):
+
+    remainingDistance_cnt = 0
+    remainingDistance_prev = 0
+    simple_pose_control_f = False
+
+    gotoFunction=vehicle.simple_goto
+    currentLocation=vehicle.location.global_relative_frame
+    targetLocation=get_location_metres(currentLocation, dNorth, dEast)
+    targetDistance=get_distance_metres(currentLocation, targetLocation)
+    gotoFunction(targetLocation)
+
+
+    print("")
+    print("")
+    print("dNorth:", dNorth)
+    print("dEast", dEast)
+
+    # send_global_velocity(self.vehicle, msg.axes[0], msg.axes[1], (-1 * msg.axes[4]), 1)     
+    
+
+    while vehicle.mode.name=="GUIDED": #Stop action if we are no longer in guided mode.
+        remainingDistance=get_distance_metres(vehicle.location.global_frame, targetLocation)
+
+
+        print("")
+        if(simple_pose_control_f == False):
+            print("remainingDistance_cnt:", remainingDistance_cnt)
+        print("vehicle.location.global_frame", vehicle.location.global_frame)
+        print("targetLocation", targetLocation)        
+
+        print("Distance to target: ", remainingDistance)
+        # print("targetDistance: ", targetDistance)
+        # print("targetDistance * 0.33 ", targetDistance * 0.33 )
+
+
+        if(remainingDistance <= (targetDistance*0.1)): #Just below target, in case of undershoot.
+            print("Reached target")
+            if(simple_pose_control_f):
+                send_global_velocity(vehicle, 0, 0, 0, 1)
+            break
+
+        if(abs(remainingDistance - remainingDistance_prev) > 0.3):
+            remainingDistance_prev = remainingDistance
+            remainingDistance_cnt = 0
+
+        elif(remainingDistance_cnt < 20):
+            remainingDistance_cnt += 1
+        else:
+            simple_pose_control_f = True
+        
+        if(simple_pose_control_f):
+            
+            print("Mode simple pose control")
+            pose2 = targetLocation
+            pose1 = vehicle.location.global_frame
+
+            distance_lat, distance_lon = calc.haversine2(pose1.lat, pose1.lon, pose2.lat, pose2.lon)
+
+            print("distance_lat", distance_lat)
+            print("distance_lon", distance_lon)
+
+            if(distance_lat > 0):
+                lat_x_vel = distance_lat if distance_lat < 0.2 else 0.2
+            else:
+                lat_x_vel = distance_lat if abs(distance_lat) < 0.2 else -0.2
+
+            if(distance_lon > 0):
+                lon_y_vel = distance_lon if distance_lon < 0.2 else 0.2
+            else:
+                lon_y_vel = distance_lon if abs(distance_lon) < 0.2 else -0.2
+            
+
+            print("lat_x_vel", lat_x_vel)
+            print("lon_y_vel", lon_y_vel)
+
+            send_global_velocity(vehicle, lat_x_vel, lon_y_vel, 0, 1)  
+
+        # distance_lat, distance_lon = haversine2(pose1["lat"], pose1["lon"], pose2["lat"], pose2["lon"])
+        # if remaining distance is the same at least 20 times then 
+        time.sleep(0.1)
+        
+
+
 
 # TEST Begin
 
@@ -102,10 +271,10 @@ time.sleep(5)
 print("Global Location: %s" % vehicle.location.global_frame)
 time.sleep(2)
 
-# vehicle.airspeed = 0.05 # [m/s]
+# # vehicle.airspeed = 0.05 # [m/s]
 
-condition_yaw(vehicle, 270, True)
-time.sleep(5)
+# condition_yaw(vehicle, 270, True)
+# time.sleep(5)
 
 
 # lat = vehicle.location.global_frame.lat
@@ -118,26 +287,47 @@ time.sleep(5)
 # calc.print_DMS(vehicle)
 # goto_position_target_global_int()
 
-y = pos.Positions(init_from_file = True)
+# y = pos.Positions(init_from_file = True)
 
-for ID in range(y.get_pose_ID()):
-    print(ID)
-    pose = y.get_pose(ID)
-    new_pose = LocationGlobal(pose["lat"], pose["lon"], pose["alt"])   
+# for ID in range(y.get_pose_ID()):
+#     print(ID)
+#     pose = y.get_pose(ID)
+#     new_pose = LocationGlobal(pose["lat"], pose["lon"], pose["alt"])   
 
-    print("Current Pose:")
-    print(vehicle.location.global_frame) 
-    print("New Pose:")
-    print(new_pose)
-    print("") 
-    # vehicle.simple_goto(new_pose) # --> Tökjól működik!!!!!
-    goto_position_target_global_int_mod(vehicle, new_pose)
-    # goto_position_target_global_int(vehicle, new_pose)
-    print("Reached Pose:")
-    print(vehicle.location.global_frame)
-    print("")
+#     print("Current Pose:")
+#     print(vehicle.location.global_frame) 
+#     print("New Pose:")
+#     print(new_pose)
+#     print("") 
+#     # vehicle.simple_goto(new_pose) # --> Tökjól működik!!!!!
+#     goto_position_target_global_int_mod(vehicle, new_pose)
+#     # goto_position_target_global_int(vehicle, new_pose)
+#     print("Reached Pose:")
+#     print(vehicle.location.global_frame)
+#     print("")
 
-    time.sleep(5)
+#     time.sleep(5)
+
+print("vehicle.home_location %s" % vehicle.home_location)
+print("vehicle.location.global_frame %s" % vehicle.location.global_frame)
+
+vehicle.home_location = vehicle.location.global_frame 
+# print("vehicle.home_location %s" % vehicle.home_location)
+
+print("")
+goto_original(1, 0, vehicle)
+# print("vehicle.location.global_frame %s" % vehicle.location.global_frame)
+time.sleep(5)
+
+goto_original(0.5, 0, vehicle)
+# print("vehicle.location.global_frame %s" % vehicle.location.global_frame)
+time.sleep(5)
+
+goto_original(0.2, 0, vehicle)
+# print("vehicle.location.global_frame %s" % vehicle.location.global_frame)
+time.sleep(5)
+
+
 
 
 # goto(vehicle, -5, 0)

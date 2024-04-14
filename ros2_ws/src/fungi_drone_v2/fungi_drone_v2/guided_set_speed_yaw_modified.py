@@ -281,19 +281,19 @@ def goto_position_target_global_int_mod_v2(vehicle, aLocation):
         remainingDistance=get_distance_metres(vehicle.location.global_frame, targetLocation)
 
 
-        print("")
-        if(simple_pose_control_f == False):
-            print("remainingDistance_cnt:", remainingDistance_cnt)
-        print("vehicle.location.global_frame", vehicle.location.global_frame)
-        print("targetLocation", targetLocation)        
+        # print("")
+        # if(simple_pose_control_f == False):
+        #     print("remainingDistance_cnt:", remainingDistance_cnt)
+        # print("vehicle.location.global_frame", vehicle.location.global_frame)
+        # print("targetLocation", targetLocation)        
 
-        print("Distance to target: ", remainingDistance)
-        # print("targetDistance: ", targetDistance)
-        # print("targetDistance * 0.33 ", targetDistance * 0.33 )
+        # print("Distance to target: ", remainingDistance)
+        ## print("targetDistance: ", targetDistance)
+        ## print("targetDistance * 0.33 ", targetDistance * 0.33 )
 
 
         if(remainingDistance <= (targetDistance*0.1)): #Just below target, in case of undershoot.
-            print("Reached target")
+            # print("Reached target")
             if(simple_pose_control_f):
                 send_global_velocity(vehicle, 0, 0, 0, 1)
             break
@@ -309,14 +309,14 @@ def goto_position_target_global_int_mod_v2(vehicle, aLocation):
         
         if(simple_pose_control_f):
             
-            print("Mode simple pose control")
+            # print("Mode simple pose control")
             pose2 = targetLocation
             pose1 = vehicle.location.global_frame
 
             distance_lat, distance_lon = sign_difference_in_meters(pose1.lat, pose1.lon, pose2.lat, pose2.lon)
 
-            print("distance_lat", distance_lat)
-            print("distance_lon", distance_lon)
+            # print("distance_lat", distance_lat)
+            # print("distance_lon", distance_lon)
 
             if(distance_lat > 0):
                 lat_x_vel = distance_lat if distance_lat < 0.2 else 0.2
@@ -329,8 +329,8 @@ def goto_position_target_global_int_mod_v2(vehicle, aLocation):
                 lon_y_vel = distance_lon if abs(distance_lon) < 0.2 else -0.2
             
 
-            print("lat_x_vel", lat_x_vel)
-            print("lon_y_vel", lon_y_vel)
+            # print("lat_x_vel", lat_x_vel)
+            # print("lon_y_vel", lon_y_vel)
 
             send_global_velocity(vehicle, lat_x_vel, lon_y_vel, 0, 1)  
 

@@ -207,7 +207,7 @@ def goto_position_target_global_int_mod(vehicle, aLocation):
     # # send command to vehicle
     # vehicle.send_mavlink(msg)
 
-    vehicle.simple_goto(aLocation)
+    vehicle.simple_goto(aLocation, airspeed = 0.5)
 
     while (vehicle.mode.name == "GUIDED"): #Stop action if we are no longer in guided mode.
         #print "DEBUG: mode: %s" % vehicle.mode.name

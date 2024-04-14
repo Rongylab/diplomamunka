@@ -8,25 +8,29 @@ from rclpy.executors import MultiThreadedExecutor
 from rclpy.node import Node
 
 from fungi_msgs.action import Countinng
+from fungi_msgs.action import Countinng2
+
 
 class CountdownServer(Node):
     def __init__(self):
         # self.ID = args[0]        
-        self.selected_action = Countinng
+        self.selected_actions = [None] * 5
+        self.selected_actions[0] = Countinng #dynamic_action
+        self.selected_actions[1] = Countinng2
 
         super().__init__("countdown_server")
         
-        self.declare_parameter('ID', rclpy.Parameter.Type.INTEGER)
-        self.ID = self.get_parameter('ID')
-        print("ID: %d" % self.ID.value)
+        # self.declare_parameter('ID', rclpy.Parameter.Type.INTEGER)
+        # self.ID = self.get_parameter('ID')
+        # print("ID: %d" % self.ID.value)
 
         
-        if(0 == self.ID.value):
-            print("0")
-        elif(1 == self.ID.value):
-            print("1")
-        else:
-            print("Nem mukodik")
+        # if(0 == self.ID.value):
+        #     print("0")
+        # elif(1 == self.ID.value):
+        #     print("1")
+        # else:
+        #     print("Nem mukodik")
         
         
 
@@ -34,46 +38,88 @@ class CountdownServer(Node):
 
         self._action_server = ActionServer(
             self,
-            self.selected_action,
+            self.selected_actions[1],
             "countdown",
-            execute_callback=self.execute_callback,
+            execute_callback=self.generate_execute_callback(self.selected_actions[1]),
             callback_group=ReentrantCallbackGroup(),
             goal_callback=self.goal_callback,
             cancel_callback=self.cancel_callback)
         
+        self._action_server2 = ActionServer(
+            self,
+            self.selected_actions[0],
+            "countdown2",
+            execute_callback=self.generate_execute_callback(self.selected_actions[0]),
+            callback_group=ReentrantCallbackGroup(),
+            goal_callback=self.goal_callback,
+            cancel_callback=self.cancel_callback)
+
+
     def destroy(self):
         self._action_server.destroy()
         super().destroy_node()
 
     # Callback function to run after acknowledging a goal from the client
-    async def execute_callback(self, goal_handle):
-        self.get_logger().info("Starting countdown…")
+    def generate_execute_callback(self, selected_action):
+        print("Create execute callback")
+        async def execute_callback(goal_handle):
+            self.get_logger().info("Starting countdown…")
 
-        feedback_msg = self.selected_action.Feedback()
+            feedback_msg = selected_action.Feedback()
 
-        # Initiate the feedback message’s current_num as the action request’s starting_num
-        feedback_msg.current_num = goal_handle.request.starting_num
+            # Initiate the feedback message’s current_num as the action request’s starting_num
+            feedback_msg.current_num = goal_handle.request.starting_num
 
-        while feedback_msg.current_num > 0:
-            if goal_handle.is_cancel_requested:
-                goal_handle.canceled()
-                self.get_logger().info('Goal canceled')
-                return self.selected_action.Result()
+            while feedback_msg.current_num > 0:
+                if goal_handle.is_cancel_requested:
+                    goal_handle.canceled()
+                    self.get_logger().info('Goal canceled')
+                    return selected_action.Result()
+                
+                # Decrement the feedback message’s current_num
+                feedback_msg.current_num = feedback_msg.current_num - 1
+
+            # Print log messages
+                self.get_logger().info('Feedback: {0}'.format(feedback_msg.current_num))
+                goal_handle.publish_feedback(feedback_msg)
+
+                # Wait a second before counting down to the next number
+                time.sleep(1)
+
+            goal_handle.succeed()
+            result = selected_action.Result()
+            result.is_finished = True
+            return result
+        return execute_callback
+    
+    # async def execute_callback(self, goal_handle):
+    #     self.get_logger().info("Starting countdown…")
+
+    #     feedback_msg = self.selected_action.Feedback()
+
+    #     # Initiate the feedback message’s current_num as the action request’s starting_num
+    #     feedback_msg.current_num = goal_handle.request.starting_num
+
+    #     while feedback_msg.current_num > 0:
+    #         if goal_handle.is_cancel_requested:
+    #             goal_handle.canceled()
+    #             self.get_logger().info('Goal canceled')
+    #             return self.selected_action.Result()
             
-	        # Decrement the feedback message’s current_num
-            feedback_msg.current_num = feedback_msg.current_num - 1
+	#         # Decrement the feedback message’s current_num
+    #         feedback_msg.current_num = feedback_msg.current_num - 1
 
-           # Print log messages
-            self.get_logger().info('Feedback: {0}'.format(feedback_msg.current_num))
-            goal_handle.publish_feedback(feedback_msg)
+    #        # Print log messages
+    #         self.get_logger().info('Feedback: {0}'.format(feedback_msg.current_num))
+    #         goal_handle.publish_feedback(feedback_msg)
 
-	        # Wait a second before counting down to the next number
-            time.sleep(1)
+	#         # Wait a second before counting down to the next number
+    #         time.sleep(1)
 
-        goal_handle.succeed()
-        result = self.selected_action.Result()
-        result.is_finished = True
-        return result
+    #     goal_handle.succeed()
+    #     result = self.selected_action.Result()
+    #     result.is_finished = True
+    #     return result
     
     def goal_callback(self, goal_request):
         """Accept or reject a client request to begin an action."""

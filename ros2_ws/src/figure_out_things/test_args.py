@@ -1,21 +1,45 @@
 import sys
-
-# args example
-class testClass():
-    def __init__(self, args):
-        print(args[0][1])
+import importlib
 
 
-def main(*args):
-    print("Main has started run")
-    print(args[0][1])
+module_name = "module_1" 
+function_name = "kukifv"
+#= importlib.import_module("module_1.py")
+# module_obj = __import__(module_name)
 
-    print("Create class")
+module = importlib.import_module(module_name)
+# Use getattr to dynamically get the function from the module
+function = getattr(module, function_name)
 
-    tc = testClass(args)
 
-if __name__ == '__main__':
-    main(sys.argv[1:])
+function("Mukodik a dolog")
+
+
+
+
+
+# create a global object containging our module
+# globals()[module_name] = module_obj
+
+
+# # args example
+# class testClass():
+#     def __init__(self, args):
+#         print(args[0][1])
+
+
+# def main(*args):
+#     print("Main has started run")
+
+#     module_obj.kukifv("egy")
+#     # print(args[0][1])
+
+#     # print("Create class")
+
+#     # tc = testClass(args)
+
+# if __name__ == '__main__':
+#     main(sys.argv[1:])
 
 
 # # kwargs example --> not working yet

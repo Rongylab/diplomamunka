@@ -5,6 +5,7 @@ from dronekit import connect, VehicleMode, LocationGlobal, LocationGlobalRelativ
 from pymavlink import mavutil # Needed for command message definitions
 import time
 import math
+from geographiclib.geodesic import Geodesic
 
 
 METER_CONST_PER_SEC_LAT = 32.435 * 10**(-3) # 1 [meter] equals to  32.435*10^-3 [sec]
@@ -142,3 +143,31 @@ def sign_difference_in_meters(lat1, lon1, lat2, lon2):
 # print("diff lon: %f" % diff_in_meter(149.1652354, 149.1652344, 1))
 # print("diff alt: %f" % diff_in_meter(586.02, 585.97))
 
+
+
+# # Define the positions of Pose0 and Pose1
+# pose0_lat, pose0_lon, pose0_alt = -35.3632619, 149.1652376, 586.0
+# pose1_lat, pose1_lon, pose1_alt = -35.3632944, 149.1653309, 586.0
+
+# # Calculate the differences in latitude, longitude, and altitude
+# delta_lat = pose1_lat - pose0_lat
+# delta_lon = pose1_lon - pose0_lon
+# delta_alt = pose1_alt - pose0_alt
+
+# # Calculate the North and East displacements using geographiclib
+# geod = Geodesic.WGS84
+# g = geod.Inverse(pose0_lat, pose0_lon, pose1_lat, pose1_lon)
+# delta_n = g['lat2'] - g['lat1']
+# delta_e = g['lon2'] - g['lon1']
+
+# # Convert angular displacements to meters
+# meters_per_degree_lat = 111111
+# meters_per_degree_lon = 111111 * abs(pose0_lon) / 180
+
+# # Calculate the displacements in meters
+# delta_n_meters = delta_n * meters_per_degree_lat
+# delta_e_meters = delta_e * meters_per_degree_lon
+
+# print("North displacement (meters):", delta_n_meters)
+# print("East displacement (meters):", delta_e_meters)
+# print("Down displacement (meters):", delta_alt)

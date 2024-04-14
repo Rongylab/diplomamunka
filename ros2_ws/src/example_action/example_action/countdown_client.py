@@ -4,6 +4,7 @@ from rclpy.node import Node
 from rclpy.parameter import Parameter
 
 from fungi_msgs.action import Countinng
+from fungi_msgs.action import Countinng2
 
 class CountdownClient(Node):
     def __init__(self):
@@ -11,7 +12,7 @@ class CountdownClient(Node):
         super().__init__("countdown_client")
         self.selected_action = Countinng
 
-        self._action_client = ActionClient(self, self.selected_action, "countdown")
+        self._action_client = ActionClient(self, self.selected_action, "countdown2")
         
     # Waits for server to be available, then sends goal
     def send_goal(self, starting_num):

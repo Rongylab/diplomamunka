@@ -97,10 +97,10 @@ def generate_launch_description():
             "slave": "0",
             "instance": "0",
             "defaults": os.path.join(
-                pkg_ardupilot_sitl,    # pkg_ardupilot_sitl pkg_fungi_drone
+                pkg_ardupilot_gazebo,    # pkg_ardupilot_sitl pkg_fungi_drone pkg_ardupilot_gazebo
                 "config",
                 "default_params",                
-                "gazebo-iris.parm",
+                "gazebo-iris-gimbal.parm", # gazebo-iris.parm
             )
             + ","
             + os.path.join(
@@ -130,11 +130,11 @@ def generate_launch_description():
     print("4.")
     # Load SDF file.
     sdf_file = os.path.join(
-        pkg_fungi_drone, "models", "iris_with_lidar", "model.sdf" # pkg_ardupilot_gazebo, pkg_fungi_drone, pkg_ardupilot_gz_description
+        pkg_ardupilot_gz_description, "models", "iris_with_camera", "model.sdf" # pkg_ardupilot_gazebo, pkg_fungi_drone, pkg_ardupilot_gz_description
     )
     with open(sdf_file, "r") as infp:
         robot_desc = infp.read()
-        # print(robot_desc)
+        print(robot_desc)
 
     # Publish /tf and /tf_static.
     robot_state_publisher = Node(

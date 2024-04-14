@@ -119,7 +119,9 @@ class droneControler(Node):
         self.start_mission_status = ["Idle", "Ongoing"]
         self.start_mission_index = 0
 
+        # Position variables
         self.positions = None #pos.Positions(init_from_file = False)
+        self.home_pose = None
 
         # TODO add ERROR displays
         self.ERROR_message = None
@@ -140,6 +142,8 @@ class droneControler(Node):
         print(" Mode: %s" % self.vehicle.mode.name )   # settable
         print("Global Location: %s" % self.vehicle.location.global_frame)
         print("Global Location (relative altitude): %s" % self.vehicle.location.global_relative_frame)
+
+        self.home_pose = self.vehicle.location.global_frame
 
         self.vehicle.mode    = VehicleMode("GUIDED")
         self.vehicle.airspeed = 0.05
@@ -211,7 +215,7 @@ class droneControler(Node):
             arm_and_takeoff(self.vehicle, 2, "GUIDED")  
 
 
-            for ID in range(target_positions.get_pose_ID()):            
+            for ID in range(1,target_positions.get_pose_ID()-1):            
                 if goal_handle.is_cancel_requested:
                     goal_handle.canceled()
                     self.get_logger().info('Goal canceled')
@@ -287,7 +291,7 @@ class droneControler(Node):
     def gimbal_rotate(self, cam_yaw = 0):
         if(self.debug_enable == True):
             if(self.simulation_active == True):
-                self.vehicle.gimbal.rotate(self.cam_pitch, self.cam_roll, cam_yaw)
+                self.vehicle.gimbal.rotate(0, cam_yaw, 0) # self.cam_pitch, self.cam_roll
                 print("cam_yaw", cam_yaw)
         # TODO Write here the necessary IO function which can handle the camera's servo state    
 
@@ -299,14 +303,15 @@ class droneControler(Node):
     def timer_callback(self):
         
         self.console_log(self.vehicle)
-        # self.dummy_local_var += 1 
-        # print(self.dummy_local_var)
-        # if(self.dummy_local_var == 20):            
-        #     self.gimbal_rotate(0)
-            
-        # if(self.dummy_local_var == 40):            
-        #     self.gimbal_rotate(90)
-        #     self.dummy_local_var = 0
+        if(self.debug_enable):
+            self.dummy_local_var += 1 
+            print(self.dummy_local_var)
+            if(self.dummy_local_var == 20):            
+                self.gimbal_rotate(-90)
+                
+            if(self.dummy_local_var == 40):            
+                self.gimbal_rotate(90)
+                self.dummy_local_var = 0
         
 
     def console_log(self, veichle):
@@ -418,7 +423,7 @@ class droneControler(Node):
 
                 # Controller RT => Save pose 
                 if(("START_POSE_COLLECTION" == self.mission_modes[self.mission_mode_index]) or
-                ("APPEND_POSE" == self.mission_modes[self.mission_mode_index])):      
+                   ("APPEND_POSE" == self.mission_modes[self.mission_mode_index])):      
                     if(-1 == int(msg.axes[5])): 
                         if(0 == (self.save_pose_counter % 10)):
                             self.save_pose_counter = 1
@@ -454,7 +459,13 @@ class droneControler(Node):
                             self.start_mission_index = 1
                             if("START_POSE_COLLECTION" == self.mission_modes[self.mission_mode_index]):                            
                                 # Create an empty position store object
-                                self.positions = pos.Positions(self.ID, init_from_file = False)   
+                                self.positions = pos.Positions(self.ID, init_from_file = False) 
+                                # Save Home Pose
+                                self.positions.store_coordinates_dict(self.home_pose.lat,
+                                                                      self.home_pose.lon,
+                                                                      self.home_pose.alt)
+                                self.saved_pose_indicator = 1
+                                  
                             elif("APPEND_POSE" == self.mission_modes[self.mission_mode_index]): 
                                 if(None == self.positions):
                                     self.positions = pos.Positions(self.ID, init_from_file = True)                            

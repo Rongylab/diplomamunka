@@ -24,3 +24,25 @@ ros2_ws/src/fungi_drone/scripts/mavproxy_fakegps.py
 ros2_ws/src/fungi_drone/scripts/mavros_control_square.py
 ros2_ws/src/fungi_drone/scripts/set_origin.py
 
+ros2_ws/src/fungi_models/models/iris_with_gimbal_v2/model.sdf
+ros2_ws/src/fungi_models/models/iris_with_gimbal_v2/model.config
+ros2_ws/src/fungi_models/package.xml
+ros2_ws/src/fungi_models/LICENSE
+ros2_ws/src/fungi_models/CMakeLists.txt
+ros2_ws/src/fungi_drone/worlds/iris_runway.sdf
+ros2_ws/src/fungi_drone/worlds/iris_runway_3d.sdf
+ros2_ws/src/fungi_drone/worlds/camtest_world.sdf
+ros2_ws/src/fungi_drone/models/camtest.sdf
+ros2_ws/src/fungi_drone/models/iris_with_cam/model.sdf
+ros2_ws/src/fungi_drone/models/iris_with_cam/model.config
+ros2_ws/src/fungi_drone/launch/iris_3d.launch.py
+ros2_ws/src/fungi_drone/config/gazebo-iris-gimbal_3d.parm
+ros2_ws/src/figure_out_things/test_args.py
+ros2_ws/src/figure_out_things/module_2.py
+ros2_ws/src/figure_out_things/module_1.py
+ros2_ws/src/figure_out_things/function_pointer.py
+ros2_ws/src/example_action/example_action/countdown_client copy.py
+ros2_ws/src/example_action/example_action/countdown_server copy.py
+
+ros2_ws/src/fungi_drone_v2/fungi_drone_v2/pose_files/drone_0_pose.json
+camera/Polcrendszer_v02.dae

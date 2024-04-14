@@ -1,0 +1,538 @@
+[INFO] [launch]: All log files can be found below /home/drone/.ros/log/2024-04-10-21-37-09-557780-drone-31620
+[INFO] [launch]: Default logging verbosity is set to INFO
+namespace:        
+transport:        udp4
+middleware:       dds
+verbose:          4
+discovery:        7400
+port:             2019
+refs:             /home/drone/diplomamunka/ros2_ws/install/ardupilot_sitl/share/ardupilot_sitl/config/dds_xrce_profile.xml
+command:          arducopter
+model:            json
+speedup:          1
+slave:            0
+sim_address:      127.0.0.1
+instance:         0
+defaults:         /home/drone/diplomamunka/ros2_ws/install/ardupilot_gazebo/share/ardupilot_gazebo/config/gazebo-iris-gimbal.parm,/home/drone/diplomamunka/ros2_ws/install/ardupilot_sitl/share/ardupilot_sitl/config/default_params/dds_udp.parm
+synthetic_clock:  True
+command:          mavproxy.py
+master:           tcp:127.0.0.1:5760
+sitl:             127.0.0.1:5501
+[INFO] [ruby $(which gz) sim-1]: process started with pid [31621]
+[INFO] [ruby $(which gz) sim-2]: process started with pid [31623]
+[INFO] [micro_ros_agent-3]: process started with pid [31626]
+[INFO] [dds_udp.parm --synthetic-clock -4]: process started with pid [31630]
+[INFO] [mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive -5]: process started with pid [31634]
+[INFO] [robot_state_publisher-6]: process started with pid [31637]
+[INFO] [parameter_bridge-7]: process started with pid [31645]
+[INFO] [rviz2-8]: process started with pid [31657]
+[INFO] [joy_node-9]: process started with pid [31659]
+[micro_ros_agent-3] [1712777830.016265] info     | UDPv4AgentLinux.cpp | init                     | running...             | port: 2019
+[micro_ros_agent-3] [1712777830.017039] info     | Root.cpp           | set_verbose_level        | logger setup           | verbose_level: 4
+[dds_udp.parm --synthetic-clock -4] Setting SIM_SPEEDUP=1.000000
+[dds_udp.parm --synthetic-clock -4] Starting SITL: JSON
+[dds_udp.parm --synthetic-clock -4] JSON control interface set to 127.0.0.1:9002
+[dds_udp.parm --synthetic-clock -4] Starting sketch 'ArduCopter'
+[dds_udp.parm --synthetic-clock -4] Starting SITL input
+[dds_udp.parm --synthetic-clock -4] Using Irlock at port : 9005
+[dds_udp.parm --synthetic-clock -4] Waiting for connection ....
+[INFO] [relay-10]: process started with pid [31662]
+[dds_udp.parm --synthetic-clock -4] bind port 5760 for SERIAL0
+[dds_udp.parm --synthetic-clock -4] SERIAL0 on TCP port 5760
+[dds_udp.parm --synthetic-clock -4] Connection on serial port 5760
+[dds_udp.parm --synthetic-clock -4] Loaded defaults from /home/drone/diplomamunka/ros2_ws/install/ardupilot_gazebo/share/ardupilot_gazebo/config/gazebo-iris-gimbal.parm,/home/drone/diplomamunka/ros2_ws/install/ardupilot_sitl/share/ardupilot_sitl/config/default_params/dds_udp.parm
+[dds_udp.parm --synthetic-clock -4] Home: -35.363262 149.165237 alt=584.000000m hdg=353.000000
+[dds_udp.parm --synthetic-clock -4] bind port 5762 for SERIAL1
+[dds_udp.parm --synthetic-clock -4] SERIAL1 on TCP port 5762
+[dds_udp.parm --synthetic-clock -4] bind port 5763 for SERIAL2
+[dds_udp.parm --synthetic-clock -4] SERIAL2 on TCP port 5763
+[rviz2-8] Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+[ruby $(which gz) sim-2] Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+[robot_state_publisher-6] [WARN] [1712777830.370515015] [sdformat_urdf]: SDFormat link [base_link] has a <sensor>, but URDF does not support this
+[robot_state_publisher-6] [WARN] [1712777830.370718476] [sdformat_urdf]: SDFormat link [imu_link] has a <sensor>, but URDF does not support this
+[robot_state_publisher-6] [WARN] [1712777830.370882116] [sdformat_urdf]: SDFormat link [tilt_link] has a <sensor>, but URDF does not support this
+[robot_state_publisher-6] [WARN] [1712777830.391114691] [kdl_parser]: The root link base_link has an inertia specified in the URDF, but KDL does not support a root link with an inertia.  As a workaround, you can add an extra dummy link to your URDF.
+[robot_state_publisher-6] [INFO] [1712777830.391341650] [robot_state_publisher]: got segment base_link
+[robot_state_publisher-6] [INFO] [1712777830.391446046] [robot_state_publisher]: got segment gimbal_link
+[robot_state_publisher-6] [INFO] [1712777830.391452743] [robot_state_publisher]: got segment imu_link
+[robot_state_publisher-6] [INFO] [1712777830.391457481] [robot_state_publisher]: got segment roll_link
+[robot_state_publisher-6] [INFO] [1712777830.391462488] [robot_state_publisher]: got segment rotor_0
+[robot_state_publisher-6] [INFO] [1712777830.391467455] [robot_state_publisher]: got segment rotor_1
+[robot_state_publisher-6] [INFO] [1712777830.391471760] [robot_state_publisher]: got segment rotor_2
+[robot_state_publisher-6] [INFO] [1712777830.391476269] [robot_state_publisher]: got segment rotor_3
+[robot_state_publisher-6] [INFO] [1712777830.391480845] [robot_state_publisher]: got segment tilt_link
+[rviz2-8] [INFO] [1712777830.553809899] [rviz2]: Stereo is NOT SUPPORTED
+[rviz2-8] [INFO] [1712777830.554068119] [rviz2]: OpenGl version: 4.6 (GLSL 4.6)
+[rviz2-8] [INFO] [1712777830.571643910] [rviz2]: Stereo is NOT SUPPORTED
+[ruby $(which gz) sim-1] [Msg] Gazebo Sim Server v7.7.0
+[ruby $(which gz) sim-1] [Msg] Loading SDF world file[/home/drone/diplomamunka/ros2_ws/install/fungi_drone/share/fungi_drone/worlds/iris_runway_3d.sdf].
+[ruby $(which gz) sim-1] [Msg] Serving entity system service on [/entity/system/add]
+[ruby $(which gz) sim-1] [Dbg] [Physics.cc:880] Loaded [gz::physics::dartsim::Plugin] from library [/usr/lib/x86_64-linux-gnu/gz-physics-6/engine-plugins/libgz-physics-dartsim-plugin.so]
+[ruby $(which gz) sim-1] [Dbg] [SystemManager.cc:74] Loaded system [gz::sim::systems::Physics] for entity [1]
+[ruby $(which gz) sim-1] [Dbg] [Sensors.cc:525] Configuring Sensors system
+[ruby $(which gz) sim-1] [Dbg] [Sensors.cc:444] SensorsPrivate::Run
+[ruby $(which gz) sim-1] [Dbg] [SystemManager.cc:74] Loaded system [gz::sim::systems::Sensors] for entity [1]
+[ruby $(which gz) sim-1] [Dbg] [Sensors.cc:421] SensorsPrivate::RenderThread started
+[ruby $(which gz) sim-1] [Dbg] [Sensors.cc:261] Waiting for init
+[ruby $(which gz) sim-1] [Msg] Create service on [/world/map/create]
+[ruby $(which gz) sim-1] [Msg] Remove service on [/world/map/remove]
+[ruby $(which gz) sim-1] [Msg] Pose service on [/world/map/set_pose]
+[ruby $(which gz) sim-1] [Msg] Pose service on [/world/map/set_pose_vector]
+[ruby $(which gz) sim-1] [Msg] Light configuration service on [/world/map/light_config]
+[ruby $(which gz) sim-1] [Msg] Physics service on [/world/map/set_physics]
+[ruby $(which gz) sim-1] [Msg] SphericalCoordinates service on [/world/map/set_spherical_coordinates]
+[ruby $(which gz) sim-1] [Msg] Enable collision service on [/world/map/enable_collision]
+[ruby $(which gz) sim-1] [Msg] Disable collision service on [/world/map/disable_collision]
+[ruby $(which gz) sim-1] [Msg] Material service on [/world/map/visual_config]
+[ruby $(which gz) sim-1] [Msg] Material service on [/world/map/wheel_slip]
+[ruby $(which gz) sim-1] [Dbg] [SystemManager.cc:74] Loaded system [gz::sim::systems::UserCommands] for entity [1]
+[ruby $(which gz) sim-1] [Dbg] [SystemManager.cc:74] Loaded system [gz::sim::systems::SceneBroadcaster] for entity [1]
+[ruby $(which gz) sim-1] [Dbg] [SystemManager.cc:74] Loaded system [gz::sim::systems::AirPressure] for entity [1]
+[ruby $(which gz) sim-1] [Dbg] [SystemManager.cc:74] Loaded system [gz::sim::systems::AirSpeed] for entity [1]
+[ruby $(which gz) sim-1] [Dbg] [SystemManager.cc:74] Loaded system [gz::sim::systems::Altimeter] for entity [1]
+[ruby $(which gz) sim-1] [Dbg] [SystemManager.cc:74] Loaded system [gz::sim::systems::Imu] for entity [1]
+[ruby $(which gz) sim-1] [Dbg] [SystemManager.cc:74] Loaded system [gz::sim::systems::Magnetometer] for entity [1]
+[ruby $(which gz) sim-1] [Dbg] [SystemManager.cc:74] Loaded system [gz::sim::systems::NavSat] for entity [1]
+[ruby $(which gz) sim-1] [Dbg] [SystemManager.cc:74] Loaded system [gz::sim::systems::JointStatePublisher] for entity [9]
+[ruby $(which gz) sim-1] [Msg] OdometryPublisher publishing odometry on [/model/iris/odometry]
+[ruby $(which gz) sim-1] [Msg] OdometryPublisher publishing odometry with covariance on [/model/iris/odometry_with_covariance]
+[ruby $(which gz) sim-1] [Msg] OdometryPublisher publishing Pose_V (TF) on [/model/iris/pose]
+[ruby $(which gz) sim-1] [Dbg] [SystemManager.cc:74] Loaded system [gz::sim::systems::OdometryPublisher] for entity [9]
+[ruby $(which gz) sim-1] [Dbg] [SystemManager.cc:74] Loaded system [gz::sim::systems::LiftDrag] for entity [9]
+[ruby $(which gz) sim-1] [Dbg] [SystemManager.cc:74] Loaded system [gz::sim::systems::LiftDrag] for entity [9]
+[ruby $(which gz) sim-1] [Dbg] [SystemManager.cc:74] Loaded system [gz::sim::systems::LiftDrag] for entity [9]
+[ruby $(which gz) sim-1] [Dbg] [SystemManager.cc:74] Loaded system [gz::sim::systems::LiftDrag] for entity [9]
+[ruby $(which gz) sim-1] [Dbg] [SystemManager.cc:74] Loaded system [gz::sim::systems::LiftDrag] for entity [9]
+[ruby $(which gz) sim-1] [Dbg] [SystemManager.cc:74] Loaded system [gz::sim::systems::LiftDrag] for entity [9]
+[ruby $(which gz) sim-1] [Dbg] [SystemManager.cc:74] Loaded system [gz::sim::systems::LiftDrag] for entity [9]
+[ruby $(which gz) sim-1] [Dbg] [SystemManager.cc:74] Loaded system [gz::sim::systems::LiftDrag] for entity [9]
+[ruby $(which gz) sim-1] [Msg] ApplyJointForce subscribing to Double messages on [/model/iris/joint/rotor_0_joint/cmd_force]
+[ruby $(which gz) sim-1] [Dbg] [SystemManager.cc:74] Loaded system [gz::sim::systems::ApplyJointForce] for entity [9]
+[ruby $(which gz) sim-1] [Msg] ApplyJointForce subscribing to Double messages on [/model/iris/joint/rotor_1_joint/cmd_force]
+[ruby $(which gz) sim-1] [Dbg] [SystemManager.cc:74] Loaded system [gz::sim::systems::ApplyJointForce] for entity [9]
+[ruby $(which gz) sim-1] [Msg] ApplyJointForce subscribing to Double messages on [/model/iris/joint/rotor_2_joint/cmd_force]
+[ruby $(which gz) sim-1] [Dbg] [SystemManager.cc:74] Loaded system [gz::sim::systems::ApplyJointForce] for entity [9]
+[ruby $(which gz) sim-1] [Msg] ApplyJointForce subscribing to Double messages on [/model/iris/joint/rotor_3_joint/cmd_force]
+[ruby $(which gz) sim-1] [Dbg] [SystemManager.cc:74] Loaded system [gz::sim::systems::ApplyJointForce] for entity [9]
+[ruby $(which gz) sim-1] [Msg] JointPositionController subscribing to Double messages on [/gimbal/cmd_roll]
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:302] [JointPositionController] system parameters:
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:303] p_gain: [2]
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:304] i_gain: [0.1]
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:305] d_gain: [0.01]
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:306] i_max: [1]
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:307] i_min: [-1]
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:308] cmd_max: [1000]
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:309] cmd_min: [-1000]
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:310] cmd_offset: [0]
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:311] Topic: [/gimbal/cmd_roll]
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:312] initial_position: [0]
+[ruby $(which gz) sim-1] [Dbg] [SystemManager.cc:74] Loaded system [gz::sim::systems::JointPositionController] for entity [9]
+[ruby $(which gz) sim-1] [Msg] JointPositionController subscribing to Double messages on [/gimbal/cmd_tilt]
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:302] [JointPositionController] system parameters:
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:303] p_gain: [2]
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:304] i_gain: [0.1]
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:305] d_gain: [0.01]
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:306] i_max: [1]
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:307] i_min: [-1]
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:308] cmd_max: [1000]
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:309] cmd_min: [-1000]
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:310] cmd_offset: [0]
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:311] Topic: [/gimbal/cmd_tilt]
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:312] initial_position: [0]
+[ruby $(which gz) sim-1] [Dbg] [SystemManager.cc:74] Loaded system [gz::sim::systems::JointPositionController] for entity [9]
+[ruby $(which gz) sim-1] [Msg] JointPositionController subscribing to Double messages on [/gimbal/cmd_yaw]
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:302] [JointPositionController] system parameters:
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:303] p_gain: [2]
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:304] i_gain: [0.1]
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:305] d_gain: [0.01]
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:306] i_max: [1]
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:307] i_min: [-1]
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:308] cmd_max: [1000]
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:309] cmd_min: [-1000]
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:310] cmd_offset: [0]
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:311] Topic: [/gimbal/cmd_yaw]
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:312] initial_position: [0]
+[ruby $(which gz) sim-1] [Dbg] [SystemManager.cc:74] Loaded system [gz::sim::systems::JointPositionController] for entity [9]
+[ruby $(which gz) sim-1] [Msg] LinearBatteryPlugin configured. Battery name: lipo_3500mAh
+[ruby $(which gz) sim-1] [Dbg] [LinearBatteryPlugin.cc:405] Battery initial voltage: 12.6
+[ruby $(which gz) sim-1] [Dbg] [SystemManager.cc:74] Loaded system [gz::sim::systems::LinearBatteryPlugin] for entity [9]
+[ruby $(which gz) sim-1] [Msg] [iris] Advertising on /gimbal/cmd_roll.
+[rviz2-8] [INFO] [1712777830.779730018] [rviz2]: Stereo is NOT SUPPORTED
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::/EntityContextMenuPlugin/EntityContextMenuPlugin.qml:52:3: QML RenderWindowOverlay: Detected anchors on an item that is managed by a layout. This is undefined behavior; use Layout.alignment instead.
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::/EntityContextMenuPlugin/EntityContextMenuPlugin.qml:67:3: QML EntityContextMenu: Detected anchors on an item that is managed by a layout. This is undefined behavior; use Layout.alignment instead.
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::/EntityContextMenuPlugin/EntityContextMenuPlugin.qml:52:3: QML RenderWindowOverlay: Detected anchors on an item that is managed by a layout. This is undefined behavior; use Layout.alignment instead.
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::/EntityContextMenuPlugin/EntityContextMenuPlugin.qml:67:3: QML EntityContextMenu: Detected anchors on an item that is managed by a layout. This is undefined behavior; use Layout.alignment instead.
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::/EntityContextMenuPlugin/EntityContextMenuPlugin.qml:52:3: QML RenderWindowOverlay: Detected anchors on an item that is managed by a layout. This is undefined behavior; use Layout.alignment instead.
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::/EntityContextMenuPlugin/EntityContextMenuPlugin.qml:67:3: QML EntityContextMenu: Detected anchors on an item that is managed by a layout. This is undefined behavior; use Layout.alignment instead.
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::/EntityContextMenuPlugin/EntityContextMenuPlugin.qml:52:3: QML RenderWindowOverlay: Detected anchors on an item that is managed by a layout. This is undefined behavior; use Layout.alignment instead.
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::/EntityContextMenuPlugin/EntityContextMenuPlugin.qml:67:3: QML EntityContextMenu: Detected anchors on an item that is managed by a layout. This is undefined behavior; use Layout.alignment instead.
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::/EntityContextMenuPlugin/EntityContextMenuPlugin.qml:52:3: QML RenderWindowOverlay: Detected anchors on an item that is managed by a layout. This is undefined behavior; use Layout.alignment instead.
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::/EntityContextMenuPlugin/EntityContextMenuPlugin.qml:67:3: QML EntityContextMenu: Detected anchors on an item that is managed by a layout. This is undefined behavior; use Layout.alignment instead.
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::/EntityContextMenuPlugin/EntityContextMenuPlugin.qml:52:3: QML RenderWindowOverlay: Detected anchors on an item that is managed by a layout. This is undefined behavior; use Layout.alignment instead.
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::/EntityContextMenuPlugin/EntityContextMenuPlugin.qml:67:3: QML EntityContextMenu: Detected anchors on an item that is managed by a layout. This is undefined behavior; use Layout.alignment instead.
+[joy_node-9] [INFO] [1712777830.960103540] [joy_node]: No haptic (rumble) available, skipping initialization
+[joy_node-9] [INFO] [1712777830.960297669] [joy_node]: Opened joystick: ShanWan Trust Gamepad.  deadzone: 0.050000
+[rviz2-8] [WARN] [1712777830.979861323] [sdformat_urdf]: SDFormat link [base_link] has a <sensor>, but URDF does not support this
+[rviz2-8] [WARN] [1712777830.980020819] [sdformat_urdf]: SDFormat link [imu_link] has a <sensor>, but URDF does not support this
+[rviz2-8] [WARN] [1712777830.980229068] [sdformat_urdf]: SDFormat link [tilt_link] has a <sensor>, but URDF does not support this
+[ruby $(which gz) sim-2] [Msg] Gazebo Sim GUI    v7.7.0
+[ruby $(which gz) sim-2] [Dbg] [Application.cc:96] Initializing application.
+[ruby $(which gz) sim-2] [Dbg] [Application.cc:128] Qt using OpenGL graphics interface
+[ruby $(which gz) sim-2] [GUI] [Dbg] [Application.cc:607] Create main window
+[ruby $(which gz) sim-2] [GUI] [Dbg] [PathManager.cc:67] Requesting resource paths through [/gazebo/resource_paths/get]
+[ruby $(which gz) sim-2] [GUI] [Dbg] [Gui.cc:341] GUI requesting list of world names. The server may be busy downloading resources. Please be patient.
+[ruby $(which gz) sim-2] [GUI] [Dbg] [PathManager.cc:56] Received resource paths.
+[ruby $(which gz) sim-2] [GUI] [Dbg] [Gui.cc:399] Requesting GUI from [/world/map/gui/info]...
+[ruby $(which gz) sim-2] [GUI] [Dbg] [GuiRunner.cc:149] Requesting initial state from [/world/map/state]...
+[ruby $(which gz) sim-2] [GUI] [Msg] Loading config [/home/drone/.gz/sim/7/gui.config]
+[ruby $(which gz) sim-2] [GUI] [Dbg] [Application.cc:459] Loading plugin [MinimalScene]
+[ruby $(which gz) sim-2] [GUI] [Dbg] [MinimalScene.cc:657] Creating gz-rendering interface for OpenGL
+[ruby $(which gz) sim-2] [GUI] [Dbg] [MinimalScene.cc:657] Creating gz-rendering interface for OpenGL
+[ruby $(which gz) sim-2] [GUI] [Dbg] [MinimalScene.cc:817] Creating render thread interface for OpenGL
+[ruby $(which gz) sim-2] [GUI] [Msg] Added plugin [3D View] to main window
+[ruby $(which gz) sim-2] [GUI] [Msg] Loaded plugin [MinimalScene] from path [/usr/lib/x86_64-linux-gnu/gz-gui-7/plugins/libMinimalScene.so]
+[ruby $(which gz) sim-2] [GUI] [Dbg] [Application.cc:459] Loading plugin [EntityContextMenuPlugin]
+[ruby $(which gz) sim-2] [GUI] [Msg] Added plugin [Entity Context Menu] to main window
+[ruby $(which gz) sim-2] [GUI] [Msg] Loaded plugin [EntityContextMenuPlugin] from path [/usr/lib/x86_64-linux-gnu/gz-sim-7/plugins/gui/libEntityContextMenuPlugin.so]
+[ruby $(which gz) sim-2] [GUI] [Dbg] [Application.cc:459] Loading plugin [GzSceneManager]
+[ruby $(which gz) sim-2] [GUI] [Msg] Added plugin [Scene Manager] to main window
+[ruby $(which gz) sim-2] [GUI] [Msg] Loaded plugin [GzSceneManager] from path [/usr/lib/x86_64-linux-gnu/gz-sim-7/plugins/gui/libGzSceneManager.so]
+[ruby $(which gz) sim-2] [GUI] [Dbg] [Application.cc:459] Loading plugin [InteractiveViewControl]
+[ruby $(which gz) sim-2] [GUI] [Msg] Camera view controller topic advertised on [/gui/camera/view_control]
+[ruby $(which gz) sim-2] [GUI] [Msg] Camera reference visual topic advertised on [/gui/camera/view_control/reference_visual]
+[ruby $(which gz) sim-2] [GUI] [Msg] Camera view control sensitivity advertised on [/gui/camera/view_control/sensitivity]
+[ruby $(which gz) sim-2] [GUI] [Msg] Added plugin [Interactive view control] to main window
+[ruby $(which gz) sim-2] [GUI] [Msg] Loaded plugin [InteractiveViewControl] from path [/usr/lib/x86_64-linux-gnu/gz-gui-7/plugins/libInteractiveViewControl.so]
+[ruby $(which gz) sim-2] [GUI] [Dbg] [Application.cc:459] Loading plugin [CameraTracking]
+[ruby $(which gz) sim-2] [GUI] [Msg] Added plugin [Camera tracking] to main window
+[parameter_bridge-7] [INFO] [1712777831.127911083] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/clock (gz.msgs.Clock) -> clock (rosgraph_msgs/msg/Clock)] (Lazy 0)
+[parameter_bridge-7] [INFO] [1712777831.131875046] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/world/map/model/iris/joint_state (gz.msgs.Model) -> joint_states (sensor_msgs/msg/JointState)] (Lazy 0)
+[parameter_bridge-7] [INFO] [1712777831.135685667] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/model/iris/odometry (gz.msgs.Odometry) -> odometry (nav_msgs/msg/Odometry)] (Lazy 0)
+[parameter_bridge-7] [INFO] [1712777831.139214147] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/model/iris/pose (gz.msgs.Pose_V) -> gz/tf (tf2_msgs/msg/TFMessage)] (Lazy 0)
+[parameter_bridge-7] [INFO] [1712777831.142026260] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/model/iris/pose_static (gz.msgs.Pose_V) -> gz/tf_static (tf2_msgs/msg/TFMessage)] (Lazy 0)
+[parameter_bridge-7] [INFO] [1712777831.143213560] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/world/map/model/iris/link/tilt_link/sensor/camera/image (gz.msgs.Image) -> camera/image (sensor_msgs/msg/Image)] (Lazy 0)
+[parameter_bridge-7] [INFO] [1712777831.145318129] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/world/map/model/iris/link/tilt_link/sensor/camera/camera_info (gz.msgs.CameraInfo) -> camera/camera_info (sensor_msgs/msg/CameraInfo)] (Lazy 0)
+[parameter_bridge-7] [INFO] [1712777831.147874107] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/world/map/model/iris/link/base_link/sensor/air_pressure_sensor/air_pressure (gz.msgs.FluidPressure) -> air_pressure (sensor_msgs/msg/FluidPressure)] (Lazy 0)
+[parameter_bridge-7] [INFO] [1712777831.149674777] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/world/map/model/iris/link/imu_link/sensor/imu_sensor/imu (gz.msgs.IMU) -> imu (sensor_msgs/msg/Imu)] (Lazy 0)
+[parameter_bridge-7] [INFO] [1712777831.151534213] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/world/map/model/iris/link/base_link/sensor/magnetometer_sensor/magnetometer (gz.msgs.Magnetometer) -> magnetometer (sensor_msgs/msg/MagneticField)] (Lazy 0)
+[parameter_bridge-7] [INFO] [1712777831.153222123] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/world/map/model/iris/link/base_link/sensor/navsat_sensor/navsat (gz.msgs.NavSat) -> navsat (sensor_msgs/msg/NavSatFix)] (Lazy 0)
+[parameter_bridge-7] [INFO] [1712777831.156082800] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/model/iris/battery/linear_battery/state (gz.msgs.BatteryState) -> battery (sensor_msgs/msg/BatteryState)] (Lazy 0)
+[dds_udp.parm --synthetic-clock -4] No JSON sensor message received, resending servos
+[ruby $(which gz) sim-2] [GUI] [Msg] Loaded plugin [CameraTracking] from path [/usr/lib/x86_64-linux-gnu/gz-gui-7/plugins/libCameraTracking.so]
+[ruby $(which gz) sim-2] [GUI] [Dbg] [Application.cc:459] Loading plugin [MarkerManager]
+[ruby $(which gz) sim-2] [GUI] [Msg] Listening to stats on [/world/map/stats]
+[ruby $(which gz) sim-2] [GUI] [Msg] Added plugin [Marker Manager] to main window
+[ruby $(which gz) sim-2] [GUI] [Msg] Loaded plugin [MarkerManager] from path [/usr/lib/x86_64-linux-gnu/gz-gui-7/plugins/libMarkerManager.so]
+[ruby $(which gz) sim-2] [GUI] [Dbg] [Application.cc:459] Loading plugin [SelectEntities]
+[ruby $(which gz) sim-2] [GUI] [Msg] Added plugin [Select entities] to main window
+[ruby $(which gz) sim-2] [GUI] [Msg] Loaded plugin [SelectEntities] from path [/usr/lib/x86_64-linux-gnu/gz-sim-7/plugins/gui/libSelectEntities.so]
+[ruby $(which gz) sim-2] [GUI] [Dbg] [Application.cc:459] Loading plugin [Spawn]
+[ruby $(which gz) sim-2] [GUI] [Msg] Added plugin [Spawn] to main window
+[ruby $(which gz) sim-2] [GUI] [Msg] Loaded plugin [Spawn] from path [/usr/lib/x86_64-linux-gnu/gz-sim-7/plugins/gui/libSpawn.so]
+[ruby $(which gz) sim-2] [GUI] [Dbg] [Application.cc:459] Loading plugin [VisualizationCapabilities]
+[ruby $(which gz) sim-2] [GUI] [Msg] View as transparent service on [/gui/view/transparent]
+[ruby $(which gz) sim-2] [GUI] [Msg] View as wireframes service on [/gui/view/wireframes]
+[ruby $(which gz) sim-2] [GUI] [Msg] View center of mass service on [/gui/view/com]
+[ruby $(which gz) sim-2] [GUI] [Msg] View inertia service on [/gui/view/inertia]
+[ruby $(which gz) sim-2] [GUI] [Msg] View collisions service on [/gui/view/collisions]
+[ruby $(which gz) sim-2] [GUI] [Msg] View joints service on [/gui/view/joints]
+[ruby $(which gz) sim-2] [GUI] [Msg] View frames service on [/gui/view/frames]
+[ruby $(which gz) sim-2] [GUI] [Msg] Added plugin [Visualization capabilities] to main window
+[ruby $(which gz) sim-2] [GUI] [Msg] Loaded plugin [VisualizationCapabilities] from path [/usr/lib/x86_64-linux-gnu/gz-sim-7/plugins/gui/libVisualizationCapabilities.so]
+[ruby $(which gz) sim-2] [GUI] [Dbg] [Application.cc:459] Loading plugin [WorldControl]
+[ruby $(which gz) sim-2] [GUI] [Msg] Using world control service [/world/map/control]
+[ruby $(which gz) sim-2] [GUI] [Msg] Listening to stats on [/world/map/stats]
+[ruby $(which gz) sim-2] [GUI] [Dbg] [WorldControl.cc:250] Using an event to share WorldControl msgs with the server
+[ruby $(which gz) sim-2] [GUI] [Msg] Added plugin [World control] to main window
+[ruby $(which gz) sim-2] [GUI] [Msg] Loaded plugin [WorldControl] from path [/usr/lib/x86_64-linux-gnu/gz-gui-7/plugins/libWorldControl.so]
+[ruby $(which gz) sim-2] [GUI] [Dbg] [Application.cc:459] Loading plugin [WorldStats]
+[ruby $(which gz) sim-2] [GUI] [Msg] Listening to stats on [/world/map/stats]
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::/EntityTree/EntityTree.qml:148:7: QML ToolButton: Detected anchors on an item that is managed by a layout. This is undefined behavior; use Layout.alignment instead.
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::/EntityTree/EntityTree.qml:148:7: QML ToolButton: Detected anchors on an item that is managed by a layout. This is undefined behavior; use Layout.alignment instead.
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::/WorldStats/WorldStats.qml:53:3: QML RowLayout: Binding loop detected for property "x"
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::/EntityContextMenuPlugin/EntityContextMenuPlugin.qml:52:3: QML RenderWindowOverlay: Detected anchors on an item that is managed by a layout. This is undefined behavior; use Layout.alignment instead.
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::/EntityContextMenuPlugin/EntityContextMenuPlugin.qml:67:3: QML EntityContextMenu: Detected anchors on an item that is managed by a layout. This is undefined behavior; use Layout.alignment instead.
+[ruby $(which gz) sim-2] [GUI] [Msg] Added plugin [World stats] to main window
+[ruby $(which gz) sim-2] [GUI] [Msg] Loaded plugin [WorldStats] from path [/usr/lib/x86_64-linux-gnu/gz-gui-7/plugins/libWorldStats.so]
+[ruby $(which gz) sim-2] [GUI] [Dbg] [Application.cc:459] Loading plugin [Shapes]
+[ruby $(which gz) sim-2] [GUI] [Msg] Added plugin [Shapes] to main window
+[ruby $(which gz) sim-2] [GUI] [Msg] Loaded plugin [Shapes] from path [/usr/lib/x86_64-linux-gnu/gz-sim-7/plugins/gui/libShapes.so]
+[ruby $(which gz) sim-2] [GUI] [Dbg] [Application.cc:459] Loading plugin [Lights]
+[ruby $(which gz) sim-2] [GUI] [Msg] Added plugin [Lights] to main window
+[ruby $(which gz) sim-2] [GUI] [Msg] Loaded plugin [Lights] from path [/usr/lib/x86_64-linux-gnu/gz-sim-7/plugins/gui/libLights.so]
+[ruby $(which gz) sim-2] [GUI] [Dbg] [Application.cc:459] Loading plugin [TransformControl]
+[ruby $(which gz) sim-2] [GUI] [Msg] Added plugin [Transform control] to main window
+[ruby $(which gz) sim-2] [GUI] [Msg] Loaded plugin [TransformControl] from path [/usr/lib/x86_64-linux-gnu/gz-sim-7/plugins/gui/libTransformControl.so]
+[ruby $(which gz) sim-2] [GUI] [Dbg] [Application.cc:459] Loading plugin [Screenshot]
+[ruby $(which gz) sim-2] [GUI] [Msg] Screenshot service on [/gui/screenshot]
+[ruby $(which gz) sim-2] [GUI] [Msg] Added plugin [Screenshot] to main window
+[ruby $(which gz) sim-2] [GUI] [Msg] Loaded plugin [Screenshot] from path [/usr/lib/x86_64-linux-gnu/gz-gui-7/plugins/libScreenshot.so]
+[ruby $(which gz) sim-2] [GUI] [Dbg] [Application.cc:459] Loading plugin [CopyPaste]
+[ruby $(which gz) sim-2] [GUI] [Msg] Added plugin [Copy/Paste] to main window
+[ruby $(which gz) sim-2] [GUI] [Msg] Loaded plugin [CopyPaste] from path [/usr/lib/x86_64-linux-gnu/gz-sim-7/plugins/gui/libCopyPaste.so]
+[ruby $(which gz) sim-2] [GUI] [Dbg] [Application.cc:459] Loading plugin [ComponentInspector]
+[ruby $(which gz) sim-2] [GUI] [Msg] Added plugin [Component inspector] to main window
+[ruby $(which gz) sim-2] [GUI] [Msg] Loaded plugin [ComponentInspector] from path [/usr/lib/x86_64-linux-gnu/gz-sim-7/plugins/gui/libComponentInspector.so]
+[ruby $(which gz) sim-2] [GUI] [Dbg] [Application.cc:459] Loading plugin [EntityTree]
+[ruby $(which gz) sim-2] [GUI] [Msg] Added plugin [Entity tree] to main window
+[ruby $(which gz) sim-2] [GUI] [Msg] Loaded plugin [EntityTree] from path [/usr/lib/x86_64-linux-gnu/gz-sim-7/plugins/gui/libEntityTree.so]
+[ruby $(which gz) sim-2] [GUI] [Dbg] [Application.cc:329] Loading window config
+[ruby $(which gz) sim-2] [GUI] [Msg] Using server control service [/server_control]
+[ruby $(which gz) sim-2] [GUI] [Dbg] [Application.cc:621] Applying config
+[ruby $(which gz) sim-2] [GUI] [Dbg] [MinimalScene.cc:657] Creating gz-rendering interface for OpenGL
+[ruby $(which gz) sim-2] [GUI] [Dbg] [MinimalScene.cc:817] Creating render thread interface for OpenGL
+[ruby $(which gz) sim-2] [GUI] [Msg] Loading plugin [gz-rendering-ogre2]
+[ruby $(which gz) sim-1] [Msg] [iris] Advertising on /gimbal/cmd_tilt.
+[ruby $(which gz) sim-1] [Msg] [iris] Advertising on /gimbal/cmd_yaw.
+[ruby $(which gz) sim-1] [Dbg] [SystemManager.cc:74] Loaded system [ArduPilotPlugin] for entity [9]
+[ruby $(which gz) sim-1] [Dbg] [CameraZoomPlugin.cc:249] CameraZoomPlugin attached to sensor [camera].
+[ruby $(which gz) sim-1] [Dbg] [CameraZoomPlugin.cc:316] CameraZoomPlugin subscribing to messages on [/model/iris/sensor/camera/zoom/cmd_zoom]
+[ruby $(which gz) sim-1] [Dbg] [SystemManager.cc:74] Loaded system [CameraZoomPlugin] for entity [50]
+[ruby $(which gz) sim-1] [Msg] Loaded level [3]
+[ruby $(which gz) sim-1] [Msg] Serving world controls on [/world/map/control], [/world/map/control/state] and [/world/map/playback/control]
+[ruby $(which gz) sim-1] [Msg] Serving GUI information on [/world/map/gui/info]
+[ruby $(which gz) sim-1] [Msg] World [map] initialized with [1ms] physics profile.
+[ruby $(which gz) sim-1] [Msg] Serving world SDF generation service on [/world/map/generate_world_sdf]
+[ruby $(which gz) sim-1] [Msg] Serving world names on [/gazebo/worlds]
+[ruby $(which gz) sim-1] [Msg] Resource path add service on [/gazebo/resource_paths/add].
+[ruby $(which gz) sim-1] [Msg] Resource path get service on [/gazebo/resource_paths/get].
+[ruby $(which gz) sim-1] [Msg] Resource path resolve service on [/gazebo/resource_paths/resolve].
+[ruby $(which gz) sim-1] [Msg] Resource paths published on [/gazebo/resource_paths].
+[ruby $(which gz) sim-1] [Msg] Server control service on [/server_control].
+[ruby $(which gz) sim-1] [Msg] Found no publishers on /stats, adding root stats topic
+[ruby $(which gz) sim-1] [Msg] Found no publishers on /clock, adding root clock topic
+[ruby $(which gz) sim-1] [Dbg] [SimulationRunner.cc:503] Creating PostUpdate worker threads: 14
+[ruby $(which gz) sim-1] [Dbg] [SimulationRunner.cc:514] Creating postupdate worker thread (0)
+[ruby $(which gz) sim-1] [Dbg] [SimulationRunner.cc:514] Creating postupdate worker thread (1)
+[ruby $(which gz) sim-1] [Dbg] [SimulationRunner.cc:514] Creating postupdate worker thread (2)
+[ruby $(which gz) sim-1] [Dbg] [SimulationRunner.cc:514] Creating postupdate worker thread (3)
+[ruby $(which gz) sim-1] [Dbg] [SimulationRunner.cc:514] Creating postupdate worker thread (4)
+[ruby $(which gz) sim-1] [Dbg] [SimulationRunner.cc:514] Creating postupdate worker thread (5)
+[ruby $(which gz) sim-1] [Dbg] [SimulationRunner.cc:514] Creating postupdate worker thread (6)
+[ruby $(which gz) sim-1] [Dbg] [SimulationRunner.cc:514] Creating postupdate worker thread (7)
+[ruby $(which gz) sim-1] [Dbg] [SimulationRunner.cc:514] Creating postupdate worker thread (8)
+[ruby $(which gz) sim-1] [Dbg] [SimulationRunner.cc:514] Creating postupdate worker thread (9)
+[ruby $(which gz) sim-1] [Dbg] [SimulationRunner.cc:514] Creating postupdate worker thread (10)
+[ruby $(which gz) sim-1] [Dbg] [SimulationRunner.cc:514] Creating postupdate worker thread (11)
+[ruby $(which gz) sim-1] [Err] [SDFFeatures.cc:843] The geometry element of collision [yaw_collision] couldn't be created
+[ruby $(which gz) sim-1] [Err] [SDFFeatures.cc:843] The geometry element of collision [roll_collision] couldn't be created
+[ruby $(which gz) sim-1] [Err] [SDFFeatures.cc:843] The geometry element of collision [pitch_collision] couldn't be created
+[dds_udp.parm --synthetic-clock -4] No JSON sensor message received, resending servos
+[ruby $(which gz) sim-1] [Dbg] [SimulationRunner.cc:514] Creating postupdate worker thread (12)
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:361] Identified joint [roll_joint] as Entity [57]
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:361] Identified joint [pitch_joint] as Entity [58]
+[ruby $(which gz) sim-1] [Dbg] [JointPositionController.cc:361] Identified joint [yaw_joint] as Entity [56]
+[ruby $(which gz) sim-1] [Msg] Found IMU sensor with name [imu_link::imu_sensor]
+[ruby $(which gz) sim-1] [Dbg] [ArduPilotPlugin.cc:1156] Computed IMU topic to be: world/map/model/iris/link/imu_link/sensor/imu_sensor/imu
+[ruby $(which gz) sim-1] [Dbg] [SDFFeatures.cc:328] Mesh construction from an SDF has not been implemented yet for dartsim. Use AttachMeshShapeFeature to use mesh shapes.
+[ruby $(which gz) sim-1] [Dbg] [SDFFeatures.cc:328] Mesh construction from an SDF has not been implemented yet for dartsim. Use AttachMeshShapeFeature to use mesh shapes.
+[ruby $(which gz) sim-1] [Dbg] [SDFFeatures.cc:328] Mesh construction from an SDF has not been implemented yet for dartsim. Use AttachMeshShapeFeature to use mesh shapes.
+[ruby $(which gz) sim-1] [Dbg] [CameraZoomPlugin.cc:393] Camera name: [iris::pitch_link::camera].
+[ruby $(which gz) sim-1] [Dbg] [Sensors.cc:680] Initialization needed
+[ruby $(which gz) sim-1] [Dbg] [Sensors.cc:273] Initializing render context
+[ruby $(which gz) sim-1] [Msg] Loading plugin [gz-rendering-ogre2]
+[ruby $(which gz) sim-1] [Dbg] [ImuSensor.cc:149] IMU data for [iris::imu_link::imu_sensor] advertised on [world/map/model/iris/link/imu_link/sensor/imu_sensor/imu]
+[ruby $(which gz) sim-1] [Dbg] [MagnetometerSensor.cc:117] Magnetometer data for [iris::base_link::magnetometer_sensor] advertised on [world/map/model/iris/link/base_link/sensor/magnetometer_sensor/magnetometer]
+[ruby $(which gz) sim-1] [Dbg] [AltimeterSensor.cc:114] Altimeter data for [iris::base_link::altimeter_sensor] advertised on [world/map/model/iris/link/base_link/sensor/altimeter_sensor/altimeter]
+[ruby $(which gz) sim-1] [Dbg] [AirPressureSensor.cc:126] Air pressure for [iris::base_link::air_pressure_sensor] advertised on [world/map/model/iris/link/base_link/sensor/air_pressure_sensor/air_pressure]
+[ruby $(which gz) sim-1] [Dbg] [AirSpeedSensor.cc:125] Air speed for [iris::base_link::air_speed_sensor] advertised on [world/map/model/iris/link/base_link/sensor/air_speed_sensor/air_speed]
+[ruby $(which gz) sim-1] [Msg] Serving scene information on [/world/map/scene/info]
+[ruby $(which gz) sim-1] [Msg] Serving graph information on [/world/map/scene/graph]
+[ruby $(which gz) sim-1] [Msg] Serving full state on [/world/map/state]
+[ruby $(which gz) sim-1] [Msg] Serving full state (async) on [/world/map/state_async]
+[ruby $(which gz) sim-1] [Msg] Publishing scene information on [/world/map/scene/info]
+[ruby $(which gz) sim-1] [Msg] Publishing entity deletions on [/world/map/scene/deletion]
+[ruby $(which gz) sim-1] [Msg] Publishing state changes on [/world/map/state]
+[ruby $(which gz) sim-1] [Msg] Publishing pose messages on [/world/map/pose/info]
+[ruby $(which gz) sim-1] [Msg] Publishing dynamic pose messages on [/world/map/dynamic_pose/info]
+[ruby $(which gz) sim-1] [Wrn] [Component.hh:144] Trying to serialize component with data type [N3sdf3v135WorldE], which doesn't have `operator<<`. Component will not be serialized.
+[ruby $(which gz) sim-1] [Wrn] [Model.hh:69] Skipping serialization / deserialization for models with //pose/@relative_to attribute.
+[ruby $(which gz) sim-1] [Wrn] [Component.hh:144] Trying to serialize component with data type [[Wrn] [Model.hh:69] St6vectorIdSaIdEE], which doesn't have `operator<<`. Component will not be serialized.
+[ruby $(which gz) sim-1] Skipping serialization / deserialization for models with //pose/@relative_to attribute.[Wrn] [Component.hh:144] 
+[ruby $(which gz) sim-1] Trying to serialize component with data type [St6vectorIdSaIdEE], which doesn't have `operator<<`. Component will not be serialized.
+[ruby $(which gz) sim-1] [Wrn] [ArduPilotPlugin.cc:1438] [iris] Drained n packets: 1
+[ruby $(which gz) sim-1] [Wrn] [ArduPilotPlugin.cc:1585] ArduPilot controller has reset
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Component.hh:189] Trying to deserialize component with data type [St6vectorIdSaIdEE], which doesn't have `operator>>`. Component will not be deserialized.
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Component.hh:189] Trying to deserialize component with data type [N3sdf3v135WorldE], which doesn't have `operator>>`. Component will not be deserialized.
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Model.hh:98] Unable to deserialize sdf::Model
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Model.hh:98] Unable to deserialize sdf::Model
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Model.hh:98] Unable to deserialize sdf::Model
+[ruby $(which gz) sim-1] Stack trace (most recent call last):
+[ruby $(which gz) sim-1] #22   Object "[0xffffffffffffffff]", at 0xffffffffffffffff, in 
+[ruby $(which gz) sim-1] #21   Object "gz sim -v4 -s -r /home/drone/diplomamunka/ros2_ws/install/fungi_drone/share/fungi_drone/worlds/iris_runway_3d.sdf", at 0x609a938691c4, in _start
+[ruby $(which gz) sim-1] #20   Object "/lib/x86_64-linux-gnu/libc.so.6", at 0x7579de229e3f, in __libc_start_main
+[ruby $(which gz) sim-1] #19   Object "/lib/x86_64-linux-gnu/libc.so.6", at 0x7579de229d8f, in 
+[ruby $(which gz) sim-1] #18   Object "gz sim -v4 -s -r /home/drone/diplomamunka/ros2_ws/install/fungi_drone/share/fungi_drone/worlds/iris_runway_3d.sdf", at 0x609a9386917e, in 
+[ruby $(which gz) sim-1] #17   Object "/lib/x86_64-linux-gnu/libruby-3.0.so.3.0", at 0x7579de6a8e19, in ruby_run_node
+[ruby $(which gz) sim-1] #16   Object "/lib/x86_64-linux-gnu/libruby-3.0.so.3.0", at 0x7579de6a5317, in 
+[ruby $(which gz) sim-1] #15   Object "/lib/x86_64-linux-gnu/libruby-3.0.so.3.0", at 0x7579de83a30c, in rb_vm_exec
+[ruby $(which gz) sim-1] #14   Object "/lib/x86_64-linux-gnu/libruby-3.0.so.3.0", at 0x7579de834c96, in 
+[ruby $(which gz) sim-1] #13   Object "/lib/x86_64-linux-gnu/libruby-3.0.so.3.0", at 0x7579de831fc5, in 
+[ruby $(which gz) sim-1] #12   Object "/lib/x86_64-linux-gnu/libruby-3.0.so.3.0", at 0x7579de82fc34, in 
+[ruby $(which gz) sim-1] #11   Object "/usr/lib/x86_64-linux-gnu/ruby/3.0.0/fiddle.so", at 0x7579de49544b, in 
+[ruby $(which gz) sim-1] #10   Object "/lib/x86_64-linux-gnu/libruby-3.0.so.3.0", at 0x7579de7fd088, in rb_nogvl
+[ruby $(which gz) sim-1] #9    Object "/usr/lib/x86_64-linux-gnu/ruby/3.0.0/fiddle.so", at 0x7579de494d6b, in 
+[ruby $(which gz) sim-1] #8    Object "/lib/x86_64-linux-gnu/libffi.so.8", at 0x7579de979492, in 
+[ruby $(which gz) sim-1] #7    Object "/lib/x86_64-linux-gnu/libffi.so.8", at 0x7579de97ce2d, in 
+[ruby $(which gz) sim-1] #6    Object "/usr/lib/x86_64-linux-gnu/libgz-sim7-gz.so.7.7.0", at 0x7579de1d18dd, in runServer
+[ruby $(which gz) sim-1] #5    Object "/lib/x86_64-linux-gnu/libgz-sim7.so.7", at 0x7579d933a4f5, in 
+[ruby $(which gz) sim-1] #4    Object "/lib/x86_64-linux-gnu/libgz-sim7.so.7", at 0x7579d934960a, in gz::sim::v7::SimulationRunner::Run(unsigned long)
+[ruby $(which gz) sim-1] #3    Object "/lib/x86_64-linux-gnu/libgz-sim7.so.7", at 0x7579d9348cd0, in gz::sim::v7::SimulationRunner::Step(gz::sim::v7::UpdateInfo const&)
+[ruby $(which gz) sim-1] #2    Object "/lib/x86_64-linux-gnu/libgz-sim7.so.7", at 0x7579d93473a1, in gz::sim::v7::SimulationRunner::UpdateSystems()
+[ruby $(which gz) sim-1] #1    Object "/home/drone/diplomamunka/ros2_ws/install/ardupilot_gazebo/lib/ardupilot_gazebo/libCameraZoomPlugin.so", at 0x7579adf7f75d, in gz::sim::v7::systems::CameraZoomPlugin::PreUpdate(gz::sim::v7::UpdateInfo const&, gz::sim::v7::EntityComponentManager&)
+[ruby $(which gz) sim-1] #0    Object "/home/drone/diplomamunka/ros2_ws/install/ardupilot_gazebo/lib/ardupilot_gazebo/libCameraZoomPlugin.so", at 0x7579adf7e0ed, in gz::sim::v7::systems::CameraZoomPlugin::Impl::InitialiseCamera()
+[ruby $(which gz) sim-1] Segmentation fault (Address not mapped to object [(nil)])
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Model.hh:98] Unable to deserialize sdf::Model
+[dds_udp.parm --synthetic-clock -4] No JSON sensor message received, resending servos
+[mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive -5] Connect tcp:127.0.0.1:5760 source_system=255
+[mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive -5] Log Directory: 
+[mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive -5] Telemetry log: mav.tlog
+[mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive -5] Waiting for heartbeat from tcp:127.0.0.1:5760
+[mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive -5] link 1 down
+[ruby $(which gz) sim-1] Segmentation fault (core dumped)
+[ERROR] [ruby $(which gz) sim-1]: process has died [pid 31621, exit code 139, cmd 'ruby $(which gz) sim -v4 -s -r /home/drone/diplomamunka/ros2_ws/install/fungi_drone/share/fungi_drone/worlds/iris_runway_3d.sdf --force-version 7'].
+[ruby $(which gz) sim-1] [Dbg] [EntityCo
+[INFO] [launch]: process[ruby $(which gz) sim-1] was required: shutting down launched system
+[INFO] [relay-10]: sending signal 'SIGINT' to process[relay-10]
+[INFO] [joy_node-9]: sending signal 'SIGINT' to process[joy_node-9]
+[INFO] [rviz2-8]: sending signal 'SIGINT' to process[rviz2-8]
+[INFO] [parameter_bridge-7]: sending signal 'SIGINT' to process[parameter_bridge-7]
+[INFO] [robot_state_publisher-6]: sending signal 'SIGINT' to process[robot_state_publisher-6]
+[INFO] [mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive -5]: sending signal 'SIGINT' to process[mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive -5]
+[INFO] [dds_udp.parm --synthetic-clock -4]: sending signal 'SIGINT' to process[dds_udp.parm --synthetic-clock -4]
+[INFO] [micro_ros_agent-3]: sending signal 'SIGINT' to process[micro_ros_agent-3]
+[INFO] [ruby $(which gz) sim-2]: sending signal 'SIGINT' to process[ruby $(which gz) sim-2]
+[relay-10] [INFO] [1712777833.868338222] [rclcpp]: signal_handler(signum=2)
+[ERROR] [micro_ros_agent-3]: process has died [pid 31626, exit code -2, cmd '/home/drone/diplomamunka/ros2_ws/install/micro_ros_agent/lib/micro_ros_agent/micro_ros_agent udp4 --middleware dds --verbose 4 --port 2019 --refs /home/drone/diplomamunka/ros2_ws/install/ardupilot_sitl/share/ardupilot_sitl/config/dds_xrce_profile.xml --ros-args -r __node:=micro_ros_agent -r __ns:=/'].
+[joy_node-9] [INFO] [1712777833.869689444] [rclcpp]: signal_handler(signum=2)
+[rviz2-8] [INFO] [1712777833.871698177] [rclcpp]: signal_handler(signum=2)
+[parameter_bridge-7] [INFO] [1712777833.873941147] [rclcpp]: signal_handler(signum=2)
+[robot_state_publisher-6] [INFO] [1712777833.875613821] [rclcpp]: signal_handler(signum=2)
+[INFO] [relay-10]: process has finished cleanly [pid 31662]
+[INFO] [parameter_bridge-7]: process has finished cleanly [pid 31645]
+[INFO] [robot_state_publisher-6]: process has finished cleanly [pid 31637]
+[INFO] [joy_node-9]: process has finished cleanly [pid 31659]
+[INFO] [rviz2-8]: process has finished cleanly [pid 31657]
+[dds_udp.parm --synthetic-clock -4] No JSON sensor message received, resending servos
+[dds_udp.parm --synthetic-clock -4] No JSON sensor message received, resending servos
+[dds_udp.parm --synthetic-clock -4] No JSON sensor message received, resending servos
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] qrc:qml/Main.qml:52: TypeError: Cannot read property 'dialogOnExitText' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] qrc:qml/Main.qml:54: TypeError: Cannot read property 'exitDialogShowCloseGui' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] qrc:qml/Main.qml:53: TypeError: Cannot read property 'exitDialogShowShutdown' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] qrc:qml/Main.qml:251: TypeError: Cannot read property 'showDrawer' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] qrc:/qml/SideDrawer.qml:93: TypeError: Cannot read property 'showDefaultDrawerOpts' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] qrc:/qml/GzSplit.qml:56: TypeError: Cannot read property 'pluginCount' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] qrc:qml/Main.qml:41: TypeError: Cannot read property 'toolBarColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] qrc:qml/Main.qml:42: TypeError: Cannot read property 'toolBarTextColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] qrc:qml/Main.qml:43: TypeError: Cannot read property 'toolBarColorDark' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] qrc:qml/Main.qml:44: TypeError: Cannot read property 'toolBarTextColorDark' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] qrc:qml/Main.qml:45: TypeError: Cannot read property 'pluginToolBarColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] qrc:qml/Main.qml:46: TypeError: Cannot read property 'pluginToolBarTextColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] qrc:qml/Main.qml:47: TypeError: Cannot read property 'pluginToolBarColorDark' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] qrc:qml/Main.qml:48: TypeError: Cannot read property 'pluginToolBarTextColorDark' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] qrc:qml/Main.qml:50: TypeError: Cannot read property 'defaultExitAction' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] qrc:qml/Main.qml:51: TypeError: Cannot read property 'showDialogOnExit' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] qrc:qml/Main.qml:55: TypeError: Cannot read property 'exitDialogShutdownText' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] qrc:qml/Main.qml:56: TypeError: Cannot read property 'exitDialogCloseGuiText' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] qrc:qml/Main.qml:66: TypeError: Cannot read property 'toolBarColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] qrc:qml/Main.qml:76: TypeError: Cannot read property 'toolBarTextColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] qrc:qml/Main.qml:219: TypeError: Cannot read property 'showPluginMenu' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] qrc:qml/Main.qml:202: TypeError: Cannot read property 'showDrawer' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] qrc:qml/Main.qml:188: TypeError: Cannot read property 'showDrawer' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:128: TypeError: Cannot read property 'pluginToolBarColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:139: TypeError: Cannot read property 'pluginToolBarTextColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:128: TypeError: Cannot read property 'pluginToolBarColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:139: TypeError: Cannot read property 'pluginToolBarTextColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:128: TypeError: Cannot read property 'pluginToolBarColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:139: TypeError: Cannot read property 'pluginToolBarTextColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:128: TypeError: Cannot read property 'pluginToolBarColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:139: TypeError: Cannot read property 'pluginToolBarTextColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:128: TypeError: Cannot read property 'pluginToolBarColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:139: TypeError: Cannot read property 'pluginToolBarTextColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:128: TypeError: Cannot read property 'pluginToolBarColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:139: TypeError: Cannot read property 'pluginToolBarTextColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:128: TypeError: Cannot read property 'pluginToolBarColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:139: TypeError: Cannot read property 'pluginToolBarTextColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:128: TypeError: Cannot read property 'pluginToolBarColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:139: TypeError: Cannot read property 'pluginToolBarTextColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:128: TypeError: Cannot read property 'pluginToolBarColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:139: TypeError: Cannot read property 'pluginToolBarTextColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:128: TypeError: Cannot read property 'pluginToolBarColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:139: TypeError: Cannot read property 'pluginToolBarTextColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:128: TypeError: Cannot read property 'pluginToolBarColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:139: TypeError: Cannot read property 'pluginToolBarTextColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:128: TypeError: Cannot read property 'pluginToolBarColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:139: TypeError: Cannot read property 'pluginToolBarTextColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:128: TypeError: Cannot read property 'pluginToolBarColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:139: TypeError: Cannot read property 'pluginToolBarTextColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:128: TypeError: Cannot read property 'pluginToolBarColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:139: TypeError: Cannot read property 'pluginToolBarTextColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:128: TypeError: Cannot read property 'pluginToolBarColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:139: TypeError: Cannot read property 'pluginToolBarTextColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:128: TypeError: Cannot read property 'pluginToolBarColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:139: TypeError: Cannot read property 'pluginToolBarTextColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:128: TypeError: Cannot read property 'pluginToolBarColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:139: TypeError: Cannot read property 'pluginToolBarTextColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:128: TypeError: Cannot read property 'pluginToolBarColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Wrn] [Application.cc:859] [QT] file::qml/GzCard.qml:139: TypeError: Cannot read property 'pluginToolBarTextColorLight' of null
+[ruby $(which gz) sim-2] [GUI] [Dbg] [MinimalScene.cc:606] Create scene [scene]
+[ruby $(which gz) sim-2] [GUI] [Dbg] [MinimalScene.cc:849] Creating texture node render interface for OpenGL
+[ruby $(which gz) sim-2] [GUI] [Msg] Loading plugin [gz-rendering-ogre2]
+[ruby $(which gz) sim-2] [GUI] [Dbg] [TransformControl.cc:453] TransformControl plugin is using camera [scene::Camera(65527)]
+[ruby $(which gz) sim-2] [GUI] [Msg] Loading plugin [gz-rendering-ogre2]
+[ruby $(which gz) sim-2] [GUI] [Msg] Loading plugin [gz-rendering-ogre2]
+[ruby $(which gz) sim-2] [GUI] [Dbg] [Spawn.cc:308] Spawn plugin is using camera [scene::Camera(65527)]
+[ruby $(which gz) sim-2] [GUI] [Msg] Loading plugin [gz-rendering-ogre2]
+[ruby $(which gz) sim-2] [GUI] [Dbg] [SelectEntities.cc:452] SelectEntities plugin is using camera [scene::Camera(65527)]
+[ruby $(which gz) sim-2] [GUI] [Msg] Loading plugin [gz-rendering-ogre2]
+[ruby $(which gz) sim-2] [GUI] [Dbg] [MarkerManager.cc:171] Advertise /marker/list service.
+[ruby $(which gz) sim-2] [GUI] [Dbg] [MarkerManager.cc:181] Advertise /marker/list.
+[ruby $(which gz) sim-2] [GUI] [Dbg] [MarkerManager.cc:191] Advertise /marker_array.
+[ruby $(which gz) sim-2] [GUI] [Msg] Loading plugin [gz-rendering-ogre2]
+[ruby $(which gz) sim-2] [GUI] [Dbg] [CameraTracking.cc:171] CameraTrackingPrivate plugin is moving camera [scene::Camera(65527)]
+[ruby $(which gz) sim-2] [GUI] [Msg] Move to service on [/gui/move_to]
+[ruby $(which gz) sim-2] [GUI] [Msg] Follow service on [/gui/follow]
+[ruby $(which gz) sim-2] [GUI] [Msg] Move to pose service on [/gui/move_to/pose]
+[ruby $(which gz) sim-2] [GUI] [Msg] Camera pose topic advertised on [/gui/camera/pose]
+[ruby $(which gz) sim-2] [GUI] [Msg] Follow offset service on [/gui/follow/offset]
+[ruby $(which gz) sim-2] [GUI] [Msg] Loading plugin [gz-rendering-ogre2]
+[ruby $(which gz) sim-2] [GUI] [Dbg] [InteractiveViewControl.cc:178] InteractiveViewControl plugin is moving camera [scene::Camera(65527)]
+[ruby $(which gz) sim-2] [GUI] [Msg] Loading plugin [gz-rendering-ogre2]
+[ruby $(which gz) sim-2] [GUI] [Msg] Loading plugin [gz-rendering-ogre2]
+[ruby $(which gz) sim-2] [GUI] [Dbg] [EntityContextMenuPlugin.cc:79] Entity context menu plugin is using camera [scene::Camera(65527)]
+[ruby $(which gz) sim-2] [GUI] [Dbg] [Gui.cc:521] Shutting down gz-sim-gui
+[ruby $(which gz) sim-2] [GUI] [Dbg] [Application.cc:173] Terminating application.
+[ruby $(which gz) sim-2] [GUI] [Msg] Loading plugin [gz-rendering-ogre2]
+[ruby $(which gz) sim-2] [GUI] [Dbg] [MinimalScene.cc:685] Destroy scene [scene]
+[ERROR] [ruby $(which gz) sim-2]: process has died [pid 31623, exit code -2, cmd 'ruby $(which gz) sim -v4 -g --force-version 7'].
+[INFO] [launch]: process[ruby $(which gz) sim-2] was required: shutting down launched system
+[dds_udp.parm --synthetic-clock -4] No JSON sensor message received, resending servos
+^C[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[ERROR] [dds_udp.parm --synthetic-clock -4]: process has died [pid 31630, exit code -2, cmd 'arducopter --model json --speedup 1 --slave 0 --sim-address=127.0.0.1 --instance 0 --defaults /home/drone/diplomamunka/ros2_ws/install/ardupilot_gazebo/share/ardupilot_gazebo/config/gazebo-iris-gimbal.parm,/home/drone/diplomamunka/ros2_ws/install/ardupilot_sitl/share/ardupilot_sitl/config/default_params/dds_udp.parm --synthetic-clock '].
+[mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive -5] Connection reset or closed by peer on TCP socket
+[mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive -5] Attempting reconnect
+[mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive -5] [Errno 111] Connection refused sleeping
+[mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive -5] Unloading module link
+[mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive -5] Unloading module log
+[mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive -5] Unloading module signing
+[mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive -5] Unloading module wp
+[mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive -5] Unloading module rally
+[mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive -5] Unloading module fence
+[mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive -5] Unloading module ftp
+[mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive -5] Unloading module param
+[mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive -5] Unloading module relay
+[mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive -5] Unloading module tuneopt
+[mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive -5] Unloading module arm
+[mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive -5] Unloading module mode
+[mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive -5] Unloading module calibration
+[mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive -5] Unloading module rc
+[mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive -5] Unloading module auxopt
+[mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive -5] Unloading module misc
+[mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive -5] Unloading module cmdlong
+[mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive -5] Unloading module battery
+[mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive -5] Unloading module terrain
+[mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive -5] Unloading module output
+[mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive -5] Unloading module adsb
+[mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive -5] Unloading module layout
+[ERROR] [mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive -5]: process has died [pid 31634, exit code -2, cmd 'mavproxy.py --out 127.0.0.1:14550 --out 127.0.0.1:14551 --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --non-interactive '].
+

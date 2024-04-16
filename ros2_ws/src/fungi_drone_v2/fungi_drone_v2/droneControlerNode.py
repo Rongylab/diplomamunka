@@ -15,7 +15,7 @@ sys.path.append(os.path.dirname(__file__))
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
-from sensor_msgs.msg import Joy
+from sensor_msgs.msg import Joy, Image
 
 # import pymavlink
 # from mavparm import MAVParmDict
@@ -44,6 +44,8 @@ from drone_kit import arm_and_takeoff
 # import json
 import positions as pos
 from fungi_msgs.msg import JoyID
+import image_saver
+from cv_bridge import CvBridge, CvBridgeError
 
 
 
@@ -119,6 +121,21 @@ class droneControler(Node):
         self.start_mission_status = ["Idle", "Ongoing"]
         self.start_mission_index = 0
 
+        # Image saver relevan variables
+        self.image_save_enable = False
+        self.image_saver_flag = False
+        self.image_saver_timer_period = 0.2
+        self.image_saver_counter = 0
+        self.image_saver_timer = None
+        self.bridge = CvBridge()
+
+        self.subscription = self.create_subscription(
+            Image,
+            '/camera/image',
+            self.image_listener_callback,
+            10)
+        
+
         # Position variables
         self.positions = None #pos.Positions(init_from_file = False)
         self.home_pose = None
@@ -163,7 +180,7 @@ class droneControler(Node):
 
         self.selected_action = Automission0
 
-
+ 
         self._action_server = ActionServer(
             self,
             self.selected_action,
@@ -196,6 +213,11 @@ class droneControler(Node):
         #     print("")
 
         #     time.sleep(5)
+
+        # TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST
+        # self.image_saver = image_saver.ImageSaver(self.ID)
+        # self.image_saver_timer = self.create_timer(self.image_saver_timer_period, self.image_saver_timer_callback)        
+        # TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST
     
     def generate_execute_callback(self, selected_action):
         async def execute_callback(goal_handle):
@@ -206,21 +228,39 @@ class droneControler(Node):
             # Initiate the feedback message’s current_num as the action request’s starting_num
             feedback_msg.current_num = goal_handle.request.start
 
+            #TODO If the pose file is empty then reject the mission
             target_positions = pos.Positions(self.ID, init_from_file = True)
 
     # LOGIC START
             # while feedback_msg.current_num > 0:
 
             # self.vehicle.mode = VehicleMode("GUIDED")
-            arm_and_takeoff(self.vehicle, 2, "GUIDED")  
+            arm_and_takeoff(self.vehicle, 2, "GUIDED") 
 
+            # Create an image saver object for the mission
+            self.image_saver = image_saver.ImageSaver(self.ID)           
 
-            for ID in range(1,target_positions.get_pose_ID()-1):            
+            for ID in range(1,target_positions.get_pose_ID()):    #-1   
+
                 if goal_handle.is_cancel_requested:
                     goal_handle.canceled()
                     self.get_logger().info('Goal canceled')
+
+                    if(self.image_save_enable):
+                        if(None != self.image_saver_timer):
+                            self.image_saver_timer.cancel()
+                            self.image_saver_timer = None
+                            
+                        if(self.image_saver_counter > 0):
+                            self.image_saver.save_poses_json()
+
                     return self.selected_action.Result()
-                
+
+                # If the pose allows to make images then the image saver timer starts
+                if(self.image_save_enable):
+                    if(1 == target_positions.get_imageSave_flag(ID)):
+                        self.image_saver_timer = self.create_timer(self.image_saver_timer_period, self.image_saver_timer_callback)               
+
                 pose = target_positions.get_pose(ID)
                 new_pose = LocationGlobal(float(pose["lat"]), float(pose["lon"]), float(pose["alt"])) 
                 # self.vehicle.simple_goto(new_pose, airspeed = 0.5) # --> Tökjól működik!!!!!
@@ -234,9 +274,19 @@ class droneControler(Node):
                 # self.get_logger().info('Feedback: {0}'.format(feedback_msg.current_num))
                 goal_handle.publish_feedback(feedback_msg)
 
+                if(self.image_save_enable):
+                # Turn off the Timer and set to the default value               
+                    if(None != self.image_saver_timer):
+                        self.image_saver_timer.cancel()
+                        self.image_saver_timer = None
+                
                 # Wait a second before counting down to the next number
                 time.sleep(1)
             
+            if(self.image_save_enable):
+                # Mission end save the poses which has taken with the images as well
+                self.image_saver.save_poses_json()
+                self.image_saver_counter = 0
             time.sleep(2)
             # Return to the base
             for ID in range(target_positions.get_pose_ID()-2, -1, -1):
@@ -303,16 +353,26 @@ class droneControler(Node):
     def timer_callback(self):
         
         self.console_log(self.vehicle)
-        if(self.debug_enable):
-            self.dummy_local_var += 1 
-            print(self.dummy_local_var)
-            if(self.dummy_local_var == 20):            
-                self.gimbal_rotate(-90)
+        # if(self.debug_enable):
+        #     self.dummy_local_var += 1 
+        #     print(self.dummy_local_var)
+        #     if(self.dummy_local_var == 20):            
+        #         self.gimbal_rotate(-90)
                 
-            if(self.dummy_local_var == 40):            
-                self.gimbal_rotate(90)
-                self.dummy_local_var = 0
+        #     if(self.dummy_local_var == 40):            
+        #         self.gimbal_rotate(90)
+        #         self.dummy_local_var = 0
         
+    # In real case it should take the image directly via cv2 API not from ROS to Image topic
+    def image_saver_timer_callback(self):
+        self.image_saver_flag = True
+        # self.image_saver_counter += 1  #TODO Remove from the code, this is obsolete
+
+    def image_listener_callback(self, msg):
+        if(True == self.image_saver_flag):
+            cv2_img = self.bridge.imgmsg_to_cv2(msg, "bgr8")
+            self.image_saver.save_an_image(cv2_img, self.vehicle.location.global_frame)
+            self.image_saver_flag = False
 
     def console_log(self, veichle):
         os.system('clear') 

@@ -3,11 +3,14 @@ import os
 
 
 class Positions:
-    def __init__(self, droneID, init_from_file = False):
+    def __init__(self, droneID, init_from_file = False, path = "" ):
         self.positions = []
         self.pose_ID = 0
         self.dirname = os.path.dirname(__file__)
-        self.path = os.path.join(self.dirname, f"pose_files/drone_{droneID}_pose.json")
+        if(path != ""):
+            self.path = os.path.join(path, f"drone_{droneID}_pose.json")
+        else:
+            self.path = os.path.join(self.dirname, f"pose_files/drone_{droneID}_pose.json")
         self.droneID = droneID   
 
         if not (os.path.exists(os.path.join(self.dirname, "pose_files"))):
@@ -16,14 +19,15 @@ class Positions:
             # print("Init from file:")
             self.read_poses_from_file()
     
-    def store_coordinates_dict(self, lat, lon, alt, orientation = 0):
+    def store_coordinates_dict(self, lat, lon, alt, saveImage_flag = 0 ,orientation = 0):
         dict = {
         "pose_ID" : self.pose_ID,
         "lat": lat,
         "lon": lon,
         "alt": alt,
         "orientation": orientation,
-        "droneID": self.droneID
+        "droneID": self.droneID,
+        "saveImage": saveImage_flag
         }
         self.positions.append(json.dumps(dict)) #,  indent = 5))
         self.pose_ID += 1
@@ -71,6 +75,17 @@ class Positions:
 
             self.pose_ID = pose_ID_local                   
                 
+    def get_imageSave_flag(self, desired_pose_ID = 0):        
+        dict = json.loads(self.positions[desired_pose_ID])
+        return (dict["saveImage"])
+
+
+
+        # for key, value in self.positions.items():
+        #     if key == "pose_ID" and value == desired_pose_ID:
+        #         save_image_flag = self.positions["saveImage"]
+        #         break
+        # return (save_image_flag)
 
 
 
@@ -87,11 +102,36 @@ class Positions:
 #     return dict            
 
 # y = Positions(0, False)
-# print(y.get_pose_ID())
+# # print(y.get_pose_ID())
 
-# y.store_coordinates_dict(1, 2, 3)
-# y.store_coordinates_dict(4, 5, 6)
+# y.store_coordinates_dict(1, 2, 3, 1)
+# y.store_coordinates_dict(4, 5, 6, 1)
 # y.write_poses_to_file()
+
+# desired_pose_ID = 1
+# save_image_flag = None 
+
+# # a = y.get_pose(1)
+# # print(a["lon"])
+
+# save_image_flag = y.get_imageSave_flag(desired_pose_ID)
+# print(save_image_flag)
+# # # Print or use the saveImage_flag
+# # if save_image_flag is not None:
+# #     print("SaveImage flag for pose_ID", desired_pose_ID, ":", save_image_flag)
+# # else:
+# #     print("Pose ID", desired_pose_ID, "not found in the dictionary.")
+
+
+
+
+
+
+
+# y.write_poses_to_file()
+
+
+
             
 
 # from dronekit import LocationGlobal

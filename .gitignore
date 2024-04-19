@@ -46,3 +46,4 @@ ros2_ws/src/example_action/example_action/countdown_server copy.py
 
 ros2_ws/src/fungi_drone_v2/fungi_drone_v2/pose_files/drone_0_pose.json
 camera/Polcrendszer_v02.dae
+ros2_ws/src/fungi_drone/worlds/box.sdf

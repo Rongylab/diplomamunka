@@ -129,11 +129,12 @@ class droneControler(Node):
         self.image_saver_timer = None
         self.bridge = CvBridge()
 
-        self.subscription = self.create_subscription(
-            Image,
-            '/camera/image',
-            self.image_listener_callback,
-            10)
+        if(self.image_save_enable):
+            self.subscription = self.create_subscription(
+                Image,
+                '/camera/image',
+                self.image_listener_callback,
+                10)
         
 
         # Position variables

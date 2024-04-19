@@ -79,7 +79,7 @@ def generate_launch_description():
         ),
         launch_arguments={
             "gz_args": "-v4 -s -r "
-            + os.path.join(pkg_project_gazebo, "worlds", "empty.sdf") # "empty.sdf", empty_hall
+            + os.path.join(pkg_project_gazebo, "worlds", "empty_hall.sdf") # "empty.sdf", empty_hall
         }.items(),
     )
 

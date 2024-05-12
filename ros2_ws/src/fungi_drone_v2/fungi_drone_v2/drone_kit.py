@@ -8,7 +8,7 @@ import math
 # Import DroneKit-Python
 from dronekit import connect, VehicleMode, LocationGlobal, LocationGlobalRelative
 import calculations as calc
-from guided_set_speed_yaw_modified import goto, condition_yaw, goto_position_target_global_int_mod
+from guided_set_speed_yaw_modified import goto, condition_yaw, goto_position_target_global_int_mod, goto_position_target_global_int_mod_alt
 # from guided_set_speed_yaw import goto_position_target_global_int
 
 # from mavproxy_fakegps import init
@@ -39,18 +39,40 @@ def arm_and_takeoff(vehicle, aTargetAltitude, flight_mode):
             print(" Waiting for arming...")
             time.sleep(1)
 
+
+
+        startLocation = vehicle.location.global_frame
+
         print("Taking off!")
         vehicle.simple_takeoff(aTargetAltitude) # Take off to target altitude
+        # vehicle.wait_simple_takeoff(aTargetAltitude, 5)
+
+        time.sleep(5)
+        currentLocation = vehicle.location.global_frame
+
+        # aTargetAltitude = (aTargetAltitude - (currentLocation.alt - startLocation.alt))
+
+        print("startLocation",startLocation)
+        print("currentLocation",currentLocation)
+        print("aTargetAltitude",aTargetAltitude)
+
+        time.sleep(5)
+
+        # goto_position_target_global_int_mod_alt(vehicle, aTargetAltitude)
+        print("Reached the target altitude!")
+
+        time.sleep(5)
+        print("take off utan szal ell")
 
         # Wait until the vehicle reaches a safe height before processing the goto (otherwise the command
         #  after Vehicle.simple_takeoff will execute immediately).
-        while True:
-            print ("Altitude: ", vehicle.location.global_relative_frame.alt)
-            #Break and return from function just below target altitude.
-            if vehicle.location.global_relative_frame.alt>=aTargetAltitude*0.70:
-                print("Reached target altitude")
-                break
-            time.sleep(1)
+        # while True:
+        #     print ("Altitude: ", vehicle.location.global_relative_frame.alt)
+        #     #Break and return from function just below target altitude.
+        #     if vehicle.location.global_relative_frame.alt>=aTargetAltitude*0.70:
+        #         print("Reached target altitude")
+        #         break
+        #     time.sleep(1)
 
 def simple_goto(vehicle, x, y, z):
     lat = vehicle.location.global_frame.lat

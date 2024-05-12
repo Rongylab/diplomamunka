@@ -14,7 +14,7 @@ sys.path.append(os.path.dirname(__file__))
 
 
 class ImageSaver:
-    def __init__(self, droneID):
+    def __init__(self, droneID, baseFrame):
         
         self.dirname = os.path.dirname(__file__)        
         self.path = os.path.join(self.dirname, f"image_files/drone_{droneID}_images") # drone_{droneID}_images.json
@@ -32,7 +32,7 @@ class ImageSaver:
 
         os.makedirs(self.full_path)
 
-        self.pose_object = pos.Positions(self.droneID, init_from_file = False, path = self.full_path)
+        self.pose_object = pos.Positions(self.droneID, baseFrame, init_from_file = False, path = self.full_path)
 
     # Save an image to a folder
     def save_an_image(self, img, pose):

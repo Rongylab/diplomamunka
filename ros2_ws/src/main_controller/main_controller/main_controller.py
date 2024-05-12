@@ -58,7 +58,7 @@ class mainController(Node):
         self.number_of_axes = 8
 
         #TODO It should get this number from input parameter
-        self.number_of_drone_nodes = 2
+        self.number_of_drone_nodes = 1
 
         
         self.selector_f = 0
@@ -114,12 +114,12 @@ class mainController(Node):
 
     def console_log(self):
         os.system('clear')
-        print("Last ID of the Drone Nodes: %d" % self.number_of_drone_nodes)
+        print(" Number of the Drone Nodes: %d" % self.number_of_drone_nodes)
         print(" Chosen ID: %d" % self.ID)
         if(self.selector_f):
             print(" Mode: Drone Selecting")
         else:
-            print(" Gatwaying Joy Messages")
+            print(" Mode: Gatwaying Joy Messages")
 
     # TODO max_id use parameter
     def change_id(self, axes_value, input_id, max_id = 1):
@@ -154,7 +154,7 @@ class mainController(Node):
     # Run when client sends goal
     def feedback_callback(self, feedback_msg):
         feedback = feedback_msg.feedback
-        self.get_logger().info('Received feedback: {0}'.format(feedback.current_num))
+        self.get_logger().info('Received Pose ID: {0}'.format(feedback.current_num))
 
     def goal_response_callback(self, future):
         # Get handle for the goal we just sent

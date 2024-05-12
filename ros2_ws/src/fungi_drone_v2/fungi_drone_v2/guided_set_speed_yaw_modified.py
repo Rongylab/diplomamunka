@@ -251,6 +251,8 @@ def goto_position_target_global_int_mod_v2(vehicle, aLocation):
     simple_pose_control_f = False
     targetLocation = aLocation
 
+    threshold = 0.6
+
     currentLocation=vehicle.location.global_relative_frame
     # targetLocation=get_location_metres(currentLocation, dNorth, dEast)
     targetDistance=get_distance_metres(currentLocation, targetLocation)
@@ -275,7 +277,13 @@ def goto_position_target_global_int_mod_v2(vehicle, aLocation):
     # # send command to vehicle
     # vehicle.send_mavlink(msg)
 
-    vehicle.simple_goto(aLocation, airspeed = 0.5)
+    # First go to desired altitude
+
+    # print("aLocation.alt",  aLocation.alt)
+    # goto_position_target_global_int_mod_alt(vehicle, aLocation.alt) #TODO KELLLLLLLLLL!!!!!!!!!!!!!!!!!!!!
+    # time.sleep(3)
+
+    vehicle.simple_goto(aLocation, airspeed = 0.6)
     
     while (vehicle.mode.name == "GUIDED"): #Stop action if we are no longer in guided mode.
         remainingDistance=get_distance_metres(vehicle.location.global_frame, targetLocation)
@@ -319,14 +327,14 @@ def goto_position_target_global_int_mod_v2(vehicle, aLocation):
             # print("distance_lon", distance_lon)
 
             if(distance_lat > 0):
-                lat_x_vel = distance_lat if distance_lat < 0.2 else 0.2
+                lat_x_vel = distance_lat if distance_lat < threshold else threshold
             else:
-                lat_x_vel = distance_lat if abs(distance_lat) < 0.2 else -0.2
+                lat_x_vel = distance_lat if abs(distance_lat) < threshold else -threshold
 
             if(distance_lon > 0):
-                lon_y_vel = distance_lon if distance_lon < 0.2 else 0.2
+                lon_y_vel = distance_lon if distance_lon < threshold else threshold
             else:
-                lon_y_vel = distance_lon if abs(distance_lon) < 0.2 else -0.2
+                lon_y_vel = distance_lon if abs(distance_lon) < threshold else -threshold
             
 
             # print("lat_x_vel", lat_x_vel)
@@ -338,6 +346,80 @@ def goto_position_target_global_int_mod_v2(vehicle, aLocation):
         # if remaining distance is the same at least 20 times then 
         time.sleep(0.1)
 
+
+def goto_position_target_global_int_mod_alt(vehicle, desired_altitude):
+    """
+    Send SET_POSITION_TARGET_GLOBAL_INT command to request the vehicle fly to a specified LocationGlobal.
+
+    For more information see: https://pixhawk.ethz.ch/mavlink/#SET_POSITION_TARGET_GLOBAL_INT
+
+    See the above link for information on the type_mask (0=enable, 1=ignore). 
+    At time of writing, acceleration and yaw bits are ignored.
+    """
+    remainingDistance_cnt = 0
+    remainingDistance_prev = 0
+    simple_pose_control_f = False
+    
+
+    currentLocation=vehicle.location.global_frame
+    targetLocation = currentLocation
+    targetLocation.alt += desired_altitude
+
+    # targetLocation=get_location_metres(currentLocation, dNorth, dEast)
+    targetDistance = (targetLocation.alt - currentLocation.alt)
+    # gotoFunction(targetLocation)    
+
+    print("targetDistance")
+    vehicle.simple_goto(targetLocation, airspeed = 0.05)
+    
+    while (vehicle.mode.name == "GUIDED"): #Stop action if we are no longer in guided mode.
+        remainingDistance = (targetLocation.alt - vehicle.location.global_frame.alt)
+
+        if(remainingDistance <= (targetDistance*0.1)): #Just below target, in case of undershoot.
+            # print("Reached target")
+            if(simple_pose_control_f):
+                send_global_velocity(vehicle, 0, 0, 0, 1)
+            break
+
+        if(abs(remainingDistance - remainingDistance_prev) > 0.3):
+            remainingDistance_prev = remainingDistance
+            remainingDistance_cnt = 0
+
+        elif(remainingDistance_cnt < 20):
+            remainingDistance_cnt += 1
+        else:
+            simple_pose_control_f = True
+        
+        if(simple_pose_control_f):
+            
+            # print("Mode simple pose control")
+            pose2 = targetLocation
+            pose1 = vehicle.location.global_frame
+
+            # distance_lat, distance_lon = sign_difference_in_meters(pose1.lat, pose1.lon, pose2.lat, pose2.lon)
+
+            distance_alt = (pose2.alt - pose1.alt)
+
+            # print("distance_lat", distance_lat)
+            # print("distance_lon", distance_lon)
+            print("distance_alt", distance_alt)
+
+            if(distance_alt > 0):
+                z_vel = distance_alt if distance_alt < 0.05 else 0.05
+            else:
+                z_vel = distance_alt if abs(distance_alt) < 0.05 else -0.05
+
+                z_vel *= -1
+
+            
+            # print("lat_x_vel", lat_x_vel)
+            # print("lon_y_vel", lon_y_vel)
+
+            send_global_velocity(vehicle, 0, 0, z_vel, 1)  
+
+        # distance_lat, distance_lon = haversine2(pose1["lat"], pose1["lon"], pose2["lat"], pose2["lon"])
+        # if remaining distance is the same at least 20 times then 
+        time.sleep(0.1)
 
 
 def goto_position_target_local_ned(vehicle, north, east, down):
@@ -518,14 +600,15 @@ def arm_disarm(vehicle):
 # TODO Function overload ISSUE!!!!!
 """ Upper limit 10  [m/s]
     Lower limit 0.1 [m/s] """
-def set_vehicle_speed(vehicle, axes_value):
+def set_vehicle_speed_guide(vehicle_speed, axes_value):
     if(1 == int(axes_value)):
-        if(vehicle.airspeed < 10):
-            vehicle.airspeed += 0.1         
+        if(vehicle_speed < 1):
+            vehicle_speed += 0.05         
 
     elif (-1 == int(axes_value)):
-        if(vehicle.airspeed > 0.1):
-            vehicle.airspeed -= 0.1 
+        if(vehicle_speed > 0.01):
+            vehicle_speed -= 0.05 
+    return vehicle_speed
 
 """ Upper limit 400  
     Lower limit 10  """

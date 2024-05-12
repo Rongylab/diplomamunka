@@ -32,7 +32,7 @@ print("Start simulator (SITL)")
 # Import DroneKit-Python
 from dronekit import connect, VehicleMode, LocationGlobal, LocationGlobalRelative
 # import calculations as calc
-from guided_set_speed_yaw_modified import goto, condition_yaw, goto_position_target_global_int_mod, send_ned_velocity
+from guided_set_speed_yaw_modified import goto, condition_yaw, goto_position_target_global_int_mod, send_ned_velocity, set_vehicle_speed_guide
 from guided_set_speed_yaw_modified import RC_Converter, send_global_velocity, arm_disarm, set_vehicle_speed, goto_position_target_global_int_mod_v2
 from drone_kit import arm_and_takeoff
 
@@ -46,6 +46,8 @@ import positions as pos
 from fungi_msgs.msg import JoyID
 import image_saver
 from cv_bridge import CvBridge, CvBridgeError
+
+import calculations as calc
 
 
 
@@ -86,8 +88,20 @@ class droneControler(Node):
         self.subscription
 
         # DEBUG Switch
-        self.debug_enable = False
+        self.debug_enable = True
         self.simulation_active = True
+        self.console_on = True
+        self.debug_pose = None
+        self.debug_pose_flag = True
+        self.debug_pose_status = 0
+        self.debug_pose_object = None
+        self.debug_pose_timer = None
+
+        # if(self.debug_pose_flag):
+        #     self.debug_pose_timer = self.create_timer(0.2, self.debug_pose_timer_callback)
+
+        # BASE Frame
+        self.base_frame = LocationGlobal(-35.3632621, 149.1650666, 584.0) #585.19
 
 
         self.timer_period = 0.2  # seconds
@@ -96,6 +110,7 @@ class droneControler(Node):
         self.seconds = [0, 0]
 
         self.scaller = 100
+        self.vehicle_speed = 0.2
         self.returm_value = 0
 
         self.flight_modes = ["GUIDED", "STABILIZE", "ALT_HOLD", "LAND"] #AIRMODE
@@ -122,7 +137,7 @@ class droneControler(Node):
         self.start_mission_index = 0
 
         # Image saver relevan variables
-        self.image_save_enable = False
+        self.image_save_enable = True
         self.image_saver_flag = False
         self.image_saver_timer_period = 0.2
         self.image_saver_counter = 0
@@ -190,6 +205,9 @@ class droneControler(Node):
             callback_group=ReentrantCallbackGroup(),
             goal_callback=self.goal_callback,
             cancel_callback=self.cancel_callback)
+        
+
+        self.gimbal_rotate(0)
          
         # self.y = pos.Positions(init_from_file = True)
        
@@ -219,6 +237,10 @@ class droneControler(Node):
         # self.image_saver = image_saver.ImageSaver(self.ID)
         # self.image_saver_timer = self.create_timer(self.image_saver_timer_period, self.image_saver_timer_callback)        
         # TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST
+
+    def debug_pose_timer_callback(self):
+        if(self.debug_pose_status == 1):
+            self.debug_pose_object.save_a_debug_pose(self.debug_pose, self.vehicle.location.global_frame)
     
     def generate_execute_callback(self, selected_action):
         async def execute_callback(goal_handle):
@@ -230,16 +252,22 @@ class droneControler(Node):
             feedback_msg.current_num = goal_handle.request.start
 
             #TODO If the pose file is empty then reject the mission
-            target_positions = pos.Positions(self.ID, init_from_file = True)
+            target_positions = pos.Positions(self.ID, self.base_frame, init_from_file = True)
 
     # LOGIC START
             # while feedback_msg.current_num > 0:
 
             # self.vehicle.mode = VehicleMode("GUIDED")
-            arm_and_takeoff(self.vehicle, 2, "GUIDED") 
+            arm_and_takeoff(self.vehicle, 3, "GUIDED")
 
             # Create an image saver object for the mission
-            self.image_saver = image_saver.ImageSaver(self.ID)           
+            self.image_saver = image_saver.ImageSaver(self.ID, self.base_frame) 
+
+            if(self.debug_pose_flag):
+                self.debug_pose_object = pos.DebugPoseSaver(self.ID, self.base_frame)
+                self.debug_pose_status = 1 
+                self.debug_pose_timer = self.create_timer(0.2, self.debug_pose_timer_callback)
+                  
 
             for ID in range(1,target_positions.get_pose_ID()):    #-1   
 
@@ -254,6 +282,12 @@ class droneControler(Node):
                             
                         if(self.image_saver_counter > 0):
                             self.image_saver.save_poses_json()
+                    
+                    if(self.debug_pose_flag):
+                        self.debug_pose = None
+
+                    self.vehicle.mode = VehicleMode("LAND")
+                    time.sleep(10)
 
                     return self.selected_action.Result()
 
@@ -264,6 +298,13 @@ class droneControler(Node):
 
                 pose = target_positions.get_pose(ID)
                 new_pose = LocationGlobal(float(pose["lat"]), float(pose["lon"]), float(pose["alt"])) 
+                self.gimbal_rotate(int(pose["orientation"]))
+
+                if(self.debug_pose_flag):
+                    self.debug_pose = new_pose
+
+
+
                 # self.vehicle.simple_goto(new_pose, airspeed = 0.5) # --> Tökjól működik!!!!!
                 # goto_position_target_global_int_mod(self.vehicle, new_pose)
                 goto_position_target_global_int_mod_v2(self.vehicle, new_pose)
@@ -283,38 +324,51 @@ class droneControler(Node):
                 
                 # Wait a second before counting down to the next number
                 time.sleep(1)
-            
+                print("self.vehicle.location.global_frame", self.vehicle.location.global_frame)
+                print("lat_diff: ", calc.haver(self.base_frame.lat, self.base_frame.lon, self.vehicle.location.global_frame.lat, self.base_frame.lon))
+                print("lon_diff: ", calc.haver(self.base_frame.lat, self.base_frame.lon, self.base_frame.lat, self.vehicle.location.global_frame.lon))
+                print("alt diff: ", (self.vehicle.location.global_frame.alt - self.base_frame.alt))
             if(self.image_save_enable):
                 # Mission end save the poses which has taken with the images as well
                 self.image_saver.save_poses_json()
                 self.image_saver_counter = 0
             time.sleep(2)
-            # Return to the base
-            for ID in range(target_positions.get_pose_ID()-2, -1, -1):
-                if goal_handle.is_cancel_requested:
-                    goal_handle.canceled()
-                    self.get_logger().info('Goal canceled')
-                    return self.selected_action.Result()
+            # # Return to the base
+            # for ID in range(target_positions.get_pose_ID()-2, -1, -1):
+            #     if goal_handle.is_cancel_requested:
+            #         goal_handle.canceled()
+            #         self.get_logger().info('Goal canceled')
+            #         return self.selected_action.Result()
                 
-                pose = target_positions.get_pose(ID)
-                new_pose = LocationGlobal(float(pose["lat"]), float(pose["lon"]), float(pose["alt"])) #(pose["lat"], pose["lon"], pose["alt"]) 
-                # self.vehicle.simple_goto(new_pose, airspeed = 0.5) # --> Tökjól működik!!!!!
-                goto_position_target_global_int_mod_v2(self.vehicle, new_pose)
+            #     pose = target_positions.get_pose(ID)
+            #     new_pose = LocationGlobal(float(pose["lat"]), float(pose["lon"]), float(pose["alt"])) #(pose["lat"], pose["lon"], pose["alt"]) 
+            #     # self.vehicle.simple_goto(new_pose, airspeed = 0.5) # --> Tökjól működik!!!!!
+            #     goto_position_target_global_int_mod_v2(self.vehicle, new_pose)
 
-                # Increment the feedback message’s current_num
-                feedback_msg.current_num +=  1
+            #     # Increment the feedback message’s current_num
+            #     feedback_msg.current_num +=  1
 
-                # Print log messages
-                # self.get_logger().info('Feedback: {0}'.format(feedback_msg.current_num))
-                goal_handle.publish_feedback(feedback_msg)
-                time.sleep(1)
+            #     # Print log messages
+            #     # self.get_logger().info('Feedback: {0}'.format(feedback_msg.current_num))
+            #     goal_handle.publish_feedback(feedback_msg)
+            #     time.sleep(1)
 
                 #Turn around
             # condition_yaw(self.vehicle, 180, True)
             # time.sleep(5)
                 #Land
+
+            if(self.debug_pose_flag):
+                self.debug_pose_status = 0
+                self.debug_pose = None
+                self.debug_pose_object.save_poses_json()
+                self.debug_pose_timer.cancel()
+                
+
             self.vehicle.mode = VehicleMode("LAND")
-            time.sleep(10)
+            time.sleep(15)
+
+            #TODO Disarmed and wait until vehicle is disarmed
 
     # LOGIC END
             # self.timer = self.create_timer(self.timer_period, self.timer_callback)
@@ -352,8 +406,9 @@ class droneControler(Node):
         print("vehicle disconnected")
 
     def timer_callback(self):
-        
-        self.console_log(self.vehicle)
+        if(self.console_on):
+            self.console_log(self.vehicle)
+            
         # if(self.debug_enable):
         #     self.dummy_local_var += 1 
         #     print(self.dummy_local_var)
@@ -377,7 +432,7 @@ class droneControler(Node):
 
     def console_log(self, veichle):
         os.system('clear') 
-        print("\n\nTime between two cals: %f\n\n" % (self.seconds[1] - self.seconds[0]))
+        # print("\n\nTime between two cals: %f\n\n" % (self.seconds[1] - self.seconds[0]))
         print(" Drone ID: %d" % self.ID)
         print(" Current flight mode: %s" % self.vehicle.mode.name)
         print(" Chosen  flight mode: %s" % self.flight_modes[self.flight_mode_index])
@@ -387,9 +442,12 @@ class droneControler(Node):
         print(" System status: %s" % self.vehicle.system_status.state)
         print(" Mission mode: %s" % self.mission_modes[self.mission_mode_index])   
         print(" Mission status: %s" % self.start_mission_status[self.start_mission_index])  
+        # print(" Battery status: %s" % self.vehicle.battery.level)
+        # print(" Battery Voltage: %s" % self.vehicle.battery.voltage)
+        # print(" Battery Current: %s" % self.vehicle.battery.current)
         
         if("GUIDED" == self.vehicle.mode.name):
-                    print(" Vehicle airspeed: %f" % self.vehicle.airspeed)
+                    print(" Vehicle airspeed: %f" % self.vehicle_speed) #self.vehicle.airspeed)
         elif("STABILIZE" == self.vehicle.mode.name):
                     print(" Vehicle RC_scaller: %d" % self.rc_scaller)   
         
@@ -438,7 +496,7 @@ class droneControler(Node):
                 # Controller Y => armed/disarmed  
                 if(1 == msg.buttons[3]):
                     if("GUIDED" == self.vehicle.mode.name):
-                        arm_and_takeoff(self.vehicle, 2, "GUIDED")    
+                        arm_and_takeoff(self.vehicle, 3, "GUIDED")    
                     if("STABILIZE" == self.vehicle.mode.name):
                         arm_and_takeoff(self.vehicle, 0, "STABILIZE")
                     # arm_disarm(self.vehicle)
@@ -476,7 +534,7 @@ class droneControler(Node):
                         self.airspeed_counter = 1
 
                         if("GUIDED" == self.vehicle.mode.name): 
-                            set_vehicle_speed(self.vehicle, msg.axes[7])
+                            self.vehicle_speed = set_vehicle_speed_guide(self.vehicle_speed, msg.axes[7])
                         elif("STABILIZE" == self.vehicle.mode.name):
                             self.rc_scaller = set_vehicle_speed(msg.axes[7], self.rc_scaller)
                     else:
@@ -488,7 +546,7 @@ class droneControler(Node):
                     if(-1 == int(msg.axes[5])): 
                         if(0 == (self.save_pose_counter % 10)):
                             self.save_pose_counter = 1
-                            # TODO call the SAVE function
+                            # TODO Check is the pose object exist or not
                             self.saved_pose_indicator = 1
                             self.positions.store_coordinates_dict(self.vehicle.location.global_frame.lat,
                                                                   self.vehicle.location.global_frame.lon,
@@ -520,7 +578,7 @@ class droneControler(Node):
                             self.start_mission_index = 1
                             if("START_POSE_COLLECTION" == self.mission_modes[self.mission_mode_index]):                            
                                 # Create an empty position store object
-                                self.positions = pos.Positions(self.ID, init_from_file = False) 
+                                self.positions = pos.Positions(self.ID, self.base_frame, init_from_file = False) 
                                 # Save Home Pose
                                 self.positions.store_coordinates_dict(self.home_pose.lat,
                                                                       self.home_pose.lon,
@@ -529,7 +587,7 @@ class droneControler(Node):
                                   
                             elif("APPEND_POSE" == self.mission_modes[self.mission_mode_index]): 
                                 if(None == self.positions):
-                                    self.positions = pos.Positions(self.ID, init_from_file = True)                            
+                                    self.positions = pos.Positions(self.ID, self.base_frame, init_from_file = True)                            
                             # else:
                             #     self.start_mission_index = s0
                         else:
@@ -557,7 +615,9 @@ class droneControler(Node):
                         else:
                             # Send velocity from the controller              
                             # send_ned_velocity(self.vehicle, msg.axes[0], msg.axes[1], (-1 * msg.axes[4]), 1) 
-                            send_global_velocity(self.vehicle, msg.axes[0], msg.axes[1], (-1 * msg.axes[4]), 1)     
+                            send_global_velocity(self.vehicle, (msg.axes[0] * self.vehicle_speed),
+                                                 (msg.axes[1] * self.vehicle_speed), ((-0.1 * msg.axes[4]) * self.vehicle_speed ), 1)  
+                               
                     elif("STABILIZE" == self.vehicle.mode.name):
                         # # Channel 1: Roll <-- msg.axes[3]                    
                         # # Channel 2: Pitch <-- msg.axes[1]                    

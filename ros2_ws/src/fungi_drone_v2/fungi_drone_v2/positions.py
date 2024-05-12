@@ -1,12 +1,20 @@
 import json
 import os
 
+#TEST
+import calculations as calc
+from dronekit import LocationGlobal
+import datetime
+#TEST
+
 
 class Positions:
-    def __init__(self, droneID, init_from_file = False, path = "" ):
+    def __init__(self, droneID, baseFrame, init_from_file = False, path = "" ):
         self.positions = []
         self.pose_ID = 0
         self.dirname = os.path.dirname(__file__)
+        self.baseFrame = baseFrame
+
         if(path != ""):
             self.path = os.path.join(path, f"drone_{droneID}_pose.json")
         else:
@@ -20,11 +28,18 @@ class Positions:
             self.read_poses_from_file()
     
     def store_coordinates_dict(self, lat, lon, alt, saveImage_flag = 0 ,orientation = 0):
+
+        # diff_x, diff_y = calc.sign_difference_in_meters(self.baseFrame.lat, self.baseFrame.lon, lat, lon)
+        diff_x = calc.haver(self.baseFrame.lat, self.baseFrame.lon, lat, self.baseFrame.lon)
+        diff_y = calc.haver(self.baseFrame.lat, self.baseFrame.lon, self.baseFrame.lat, lon)
+
+        diff_alt = alt - self.baseFrame.alt
+
         dict = {
         "pose_ID" : self.pose_ID,
-        "lat": lat,
-        "lon": lon,
-        "alt": alt,
+        "lat": diff_x,
+        "lon": diff_y,
+        "alt": diff_alt,
         "orientation": orientation,
         "droneID": self.droneID,
         "saveImage": saveImage_flag
@@ -36,7 +51,12 @@ class Positions:
         return self.positions
     
     def get_pose(self, pose_ID):
-        return json.loads(self.positions[pose_ID])
+        pose = json.loads(self.positions[pose_ID])
+        new_lat, new_lon = calc.meters_to_difference(self.baseFrame.lat, self.baseFrame.lon, pose["lat"], pose["lon"])
+        pose["alt"] = pose["alt"] + self.baseFrame.alt
+        pose["lat"] = new_lat
+        pose["lon"] = new_lon        
+        return pose
     
     def set_pose_ID(self, new_pose_ID):
         self.pose_ID = new_pose_ID
@@ -88,6 +108,52 @@ class Positions:
         # return (save_image_flag)
 
 
+class DebugPoseSaver:
+    def __init__(self, droneID, baseFrame):
+        
+        self.dirname = os.path.dirname(__file__)        
+        self.path = os.path.join(self.dirname, f"debug/drone_{droneID}_debugposes") # drone_{droneID}_images.json
+        self.droneID = droneID          
+
+        # Create a folder which name is a timestamp
+        time_object = datetime.datetime.now()
+        object_creation_time = time_object.timestamp()
+        datetime_object = datetime.datetime.fromtimestamp(object_creation_time)
+        formatted_datetime = datetime_object.strftime("%Y_%m_%d_%H_%M_%S")
+        self.full_path = os.path.join(self.dirname, self.path, formatted_datetime)
+
+        if not (os.path.exists(os.path.join(self.dirname, self.path))):
+             os.makedirs(os.path.join(self.dirname, self.path))
+
+
+        self.desiredPath = os.path.join(self.full_path, "desired")
+        self.realPath = os.path.join(self.full_path, "real")
+
+        os.makedirs(self.full_path)
+        os.makedirs(self.desiredPath)
+        os.makedirs(self.realPath)
+
+        self.desiredpose_object = Positions(self.droneID, baseFrame, init_from_file = False, path = self.desiredPath)
+        self.realpose_object = Positions(self.droneID, baseFrame, init_from_file = False, path = self.realPath)
+        
+
+    # Save an image to a folder
+    def save_a_debug_pose(self, desired_pose, real_pose):        
+        self.desiredpose_object.store_coordinates_dict(desired_pose.lat, desired_pose.lon, desired_pose.alt)  
+        self.realpose_object.store_coordinates_dict(real_pose.lat, real_pose.lon, real_pose.alt)  
+        
+    # Save image list and their poses to a json file
+    def save_poses_json(self):
+        self.desiredpose_object.write_poses_to_file()
+        self.realpose_object.write_poses_to_file()
+
+
+
+
+
+
+
+
 
 # Test part
 
@@ -101,18 +167,33 @@ class Positions:
 #     }
 #     return dict            
 
-# y = Positions(0, False)
-# # print(y.get_pose_ID())
+# pose0_lat, pose0_lon, pose0_alt = -35.3632621, 149.1650666, 585.19
+# pose1_lat, pose1_lon, pose1_alt = -35.3632622, 149.1650847, 586.0
+# pose2_lat, pose2_lon, pose2_alt = -35.3632874, 149.165413, 586.0
 
-# y.store_coordinates_dict(1, 2, 3, 1)
-# y.store_coordinates_dict(4, 5, 6, 1)
+# Base_loc = LocationGlobal(pose0_lat, pose0_lon, pose0_alt)
+# loc1 = LocationGlobal(pose1_lat, pose1_lon, pose1_alt)
+# loc2 = LocationGlobal(pose2_lat, pose2_lon, pose2_alt)
+
+# # diff_x, diff_y = calc.sign_difference_in_meters(Base_loc.lat, Base_loc.lon, new_lat, new_lon)
+# y = Positions(0, Base_loc, False)
+# # # print(y.get_pose_ID())
+
+# y.store_coordinates_dict(Base_loc.lat, Base_loc.lon, Base_loc.alt, 0)
+# y.store_coordinates_dict(loc1.lat, loc1.lon, loc1.alt, 0)
+# y.store_coordinates_dict(loc2.lat, loc2.lon, loc2.alt, 1)
+
+# # y.store_coordinates_dict(4, 5, 6, 1)
 # y.write_poses_to_file()
 
-# desired_pose_ID = 1
-# save_image_flag = None 
+# # desired_pose_ID = 1
+# # save_image_flag = None 
 
-# # a = y.get_pose(1)
-# # print(a["lon"])
+# a = y.get_pose(1)
+# print(a)
+# print(type(a))
+
+# 
 
 # save_image_flag = y.get_imageSave_flag(desired_pose_ID)
 # print(save_image_flag)

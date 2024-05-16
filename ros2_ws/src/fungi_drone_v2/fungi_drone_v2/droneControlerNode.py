@@ -16,6 +16,8 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
 from sensor_msgs.msg import Joy, Image
+from measurement import Measurement
+import random
 
 # import pymavlink
 # from mavparm import MAVParmDict
@@ -150,8 +152,10 @@ class droneControler(Node):
                 '/camera/image',
                 self.image_listener_callback,
                 10)
-        
-
+            
+        #TODO add ID from parameter
+        self.ID = 0
+            
         # Position variables
         self.positions = None #pos.Positions(init_from_file = False)
         self.home_pose = None
@@ -159,8 +163,8 @@ class droneControler(Node):
         # TODO add ERROR displays
         self.ERROR_message = None
 
-        #TODO add ID from parameter
-        self.ID = 0
+        self.measurement_object = None
+       
                 
         #TODO IP address change according to the input parameters
         print("Connecting to vehicle on: %s" % ("127.0.0.1:14550"))
@@ -253,7 +257,7 @@ class droneControler(Node):
 
             #TODO If the pose file is empty then reject the mission
             target_positions = pos.Positions(self.ID, self.base_frame, init_from_file = True)
-
+            
     # LOGIC START
             # while feedback_msg.current_num > 0:
 
@@ -262,6 +266,9 @@ class droneControler(Node):
 
             # Create an image saver object for the mission
             self.image_saver = image_saver.ImageSaver(self.ID, self.base_frame) 
+
+            # Create a measurement saver object for the mission
+            self.measurement_object = Measurement(self.ID)
 
             if(self.debug_pose_flag):
                 self.debug_pose_object = pos.DebugPoseSaver(self.ID, self.base_frame)
@@ -422,6 +429,13 @@ class droneControler(Node):
     # In real case it should take the image directly via cv2 API not from ROS to Image topic
     def image_saver_timer_callback(self):
         self.image_saver_flag = True
+
+        random.seed()
+        co2_random = random.randint(300, 400)
+        hum_random = random.randint(50, 90)
+        temp_random = random.random() * 2 + 20
+        
+        self.measurement_object.store_measurement_datas_dict(temp_random, hum_random, co2_random)
         # self.image_saver_counter += 1  #TODO Remove from the code, this is obsolete
 
     def image_listener_callback(self, msg):

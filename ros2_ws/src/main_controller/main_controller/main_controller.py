@@ -26,9 +26,9 @@ class mainController(Node):
     def __init__(self):
         super().__init__("mainController")
         
-        self.AUTOMAT_MODE = True
+        self.AUTOMAT_MODE = False
         self.ID = 0
-        self.selected_action = Automission0
+        self.selected_action = Automission0        
 
         # Create joy topic subscription
         self.subscription = self.create_subscription(
@@ -67,43 +67,42 @@ class mainController(Node):
 
 
     def listener_callback(self, msg):
-        tx_msg = JoyID()
 
-        # Press the controller's Back/Select and Start/Play buttons to change the mode to drone ID selector
-        if(1 == msg.buttons[6]) and (1 == msg.buttons[7]):
-            self.selector_f = 1
+        if((len(msg.buttons) == self.number_of_buttons) and (len(msg.axes) == self.number_of_axes)):
+            tx_msg = JoyID()        
 
-        if(self.selector_f and (1 == msg.buttons[7]) and (1 != msg.buttons[6])):
-            self.selector_f = 0
+            # Press the controller's Back/Select and Start/Play buttons to change the mode to drone ID selector
+            if(1 == msg.buttons[6]) and (1 == msg.buttons[7]):
+                self.selector_f = 1
 
-        if(0 == self.selector_f):
-            for i in range(0, self.number_of_buttons):           
-                tx_msg.buttons[i] = msg.buttons[i]            
+            if(self.selector_f and (1 == msg.buttons[7]) and (1 != msg.buttons[6])):
+                self.selector_f = 0
+
+            if(0 == self.selector_f):
+                for i in range(0, self.number_of_buttons):           
+                    tx_msg.buttons[i] = msg.buttons[i]            
+                
+                for i in range(0, self.number_of_axes):
+                    tx_msg.axes[i] = msg.axes[i]  
             
-            for i in range(0, self.number_of_axes):
-                tx_msg.axes[i] = msg.axes[i]  
-           
-        else:
-            # Controller Cross up/down => change movement speed
-            if((1 == int(msg.axes[7])) or (-1 == int(msg.axes[7]))):
-                if(0 == (self.id_selector_counter % 5)):
-                    self.id_selector_counter = 1
+            else:
+                # Controller Cross up/down => change movement speed
+                if((1 == int(msg.axes[7])) or (-1 == int(msg.axes[7]))):
+                    if(0 == (self.id_selector_counter % 5)):
+                        self.id_selector_counter = 1
 
-                    self.ID = self.change_id(int(msg.axes[7]), self.ID, self.number_of_drone_nodes)
+                        self.ID = self.change_id(int(msg.axes[7]), self.ID, self.number_of_drone_nodes)
+                        
+                    else:
+                        self.id_selector_counter += 1
+                # A (CROSS) 
+                if((1 == msg.buttons[0]) and (not self.misson)):
+                    self.misson = 1
+                    self.send_goal(True)
 
-                    
-                else:
-                    self.id_selector_counter += 1
-            # A (CROSS) 
-            if((1 == msg.buttons[0]) and (not self.misson)):
-                self.misson = 1
-                self.send_goal(True)
-
-
-
-
-        tx_msg.id = self.ID        
-        self.publisher_.publish(tx_msg)
+            tx_msg.id = self.ID        
+            self.publisher_.publish(tx_msg)       
+     
 
     def timer_callback(self):
         self.console_log()
